@@ -1,0 +1,48 @@
+# Deploy Supabase migrations and Edge Functions when code is merged to main.
+# Uses GitHub Environment (e.g. "production") for secrets and variables.
+#
+# Required in GitHub → Settings → Environments → [your environment]:
+#   Secrets:
+#     SUPABASE_ACCESS_TOKEN  — from Supabase Dashboard → Account → Access Tokens
+#   Variables:
+#     SUPABASE_PROJECT_REF   — project ref (e.g. rlnzqvrcygqleqyhdvek from https://xxx.supabase.co)
+#     VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, etc. — optional, same as .env for other workflows
+
+name: Supabase Deploy (Migrations + Edge Functions)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-supabase:
+    name: Migrations & Edge Functions
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link Supabase project
+        run: |
+          if [ -z "$SUPABASE_PROJECT_REF" ]; then
+            echo "::error::SUPABASE_PROJECT_REF is not set in Environment variables"
+            exit 1
+          fi
+          supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Push database migrations
+        run: supabase db push
+
+      - name: Deploy Edge Functions
+        run: supabase functions deploy
