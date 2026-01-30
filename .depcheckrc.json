@@ -1,0 +1,27 @@
+{
+  "ignoreMatches": [
+    "@types/*",
+    "@typescript-eslint/*",
+    "typescript",
+    "eslint",
+    "@eslint/*",
+    "eslint-plugin-*",
+    "globals",
+    "@vitejs/*",
+    "vite",
+    "autoprefixer",
+    "postcss",
+    "tailwindcss",
+    "@tailwindcss/*",
+    "tailwindcss-animate",
+    "tailwind-merge",
+    "@playwright/test",
+    "lovable-tagger",
+    "supabase",
+    "@tanstack/react-query-devtools",
+    "prettier",
+    "react-markdown",
+    "remark-gfm"
+  ],
+  "skip-missing": true
+}

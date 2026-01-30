@@ -1,0 +1,27 @@
+{
+  "threshold": 20,
+  "min-lines": 5,
+  "min-tokens": 50,
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/public/**",
+    "**/volumes/**",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/migrations/**",
+    "**/supabase/**",
+    "**/*.config.*",
+    "**/vite-env.d.ts"
+  ],
+  "reporters": ["console", "html"],
+  "output": "./reports/jscpd",
+  "format": ["typescript", "javascript", "jsx"],
+  "blame": false,
+  "silent": false,
+  "verbose": false,
+  "debug": false,
+  "gitignore": true
+}

@@ -1,0 +1,18 @@
+:root {
+  /* border radius tokens (px) */
+  --radius-xs: 8px; /* XS */
+  --radius-sm: 16px; /* S */
+  --radius-md: 24px; /* M */
+  --radius-lg: 32px; /* L */
+  --radius-full: 999px; /* Full */
+
+  /* typography tokens - font sizes (px) */
+  --font-size-xs: 8px; /* XS - for tiny labels, badges */
+  --font-size-sm: 11px; /* SM - for small text, captions */
+  --font-size-md: 12px; /* MD - for body text, buttons */
+  --font-size-base: 14px; /* BASE - for default body text */
+  --font-size-lg: 16px; /* LG - for larger body text, inputs */
+  --font-size-xl: 18px; /* XL - for headings, titles */
+  --font-size-2xl: 20px; /* 2XL - for large headings */
+  --font-size-3xl: 24px; /* 3XL - for extra large headings */
+}

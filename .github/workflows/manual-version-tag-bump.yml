@@ -1,0 +1,203 @@
+name: Manual Version Tag & Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+        default: 'patch'
+
+jobs:
+  tag-and-bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install jq for JSON parsing
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Read current version
+        id: current-version
+        run: |
+          if [ -f "version.json" ]; then
+            VERSION=$(cat version.json | jq -r '.version')
+            BUILD=$(cat version.json | jq -r '.build')
+            echo "current_version=$VERSION" >> $GITHUB_OUTPUT
+            echo "current_build=$BUILD" >> $GITHUB_OUTPUT
+            echo "📋 Current version: $VERSION-build.$BUILD"
+          else
+            echo "❌ version.json not found"
+            exit 1
+          fi
+
+      - name: Create tag for current version
+        id: create-tag
+        run: |
+          CURRENT_VERSION="${{ steps.current-version.outputs.current_version }}"
+          BUILD="${{ steps.current-version.outputs.current_build }}"
+          TAG_NAME="v${CURRENT_VERSION}-build.${BUILD}"
+
+          echo "🏷️ Creating tag: $TAG_NAME"
+
+          # Configure git
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Create and push tag
+          git tag -a "$TAG_NAME" -m "Release version $TAG_NAME"
+          git push origin "$TAG_NAME"
+
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "✅ Tag created successfully: $TAG_NAME"
+
+      - name: Calculate new version
+        id: new-version
+        run: |
+          CURRENT_VERSION="${{ steps.current-version.outputs.current_version }}"
+          BUMP_TYPE="${{ github.event.inputs.bump_type }}"
+
+          echo "🔢 Current version: $CURRENT_VERSION"
+          echo "⬆️ Bump type: $BUMP_TYPE"
+
+          # Parse version components
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+
+          # Bump version based on type
+          case $BUMP_TYPE in
+            "major")
+              NEW_MAJOR=$((MAJOR + 1))
+              NEW_MINOR=0
+              NEW_PATCH=0
+              ;;
+            "minor")
+              NEW_MAJOR=$MAJOR
+              NEW_MINOR=$((MINOR + 1))
+              NEW_PATCH=0
+              ;;
+            "patch")
+              NEW_MAJOR=$MAJOR
+              NEW_MINOR=$MINOR
+              NEW_PATCH=$((PATCH + 1))
+              ;;
+            *)
+              echo "❌ Invalid bump type: $BUMP_TYPE"
+              exit 1
+              ;;
+          esac
+
+          NEW_VERSION="${NEW_MAJOR}.${NEW_MINOR}.${NEW_PATCH}"
+          echo "🆕 New version: $NEW_VERSION"
+
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update version files
+        run: |
+          NEW_VERSION="${{ steps.new-version.outputs.new_version }}"
+
+          echo "📝 Updating version.json to $NEW_VERSION"
+
+          # Update version.json
+          cat > version.json << EOF
+          {
+            "version": "$NEW_VERSION",
+            "build": "1"
+          }
+          EOF
+
+          # Copy to public directory
+          cp version.json public/version.json
+
+          echo "📝 Updating package.json to $NEW_VERSION-build.1"
+
+          # Update package.json version
+          npm version "$NEW_VERSION-build.1" --no-git-tag-version
+
+      - name: Commit and push version bump
+        run: |
+          NEW_VERSION="${{ steps.new-version.outputs.new_version }}"
+          BUMP_TYPE="${{ github.event.inputs.bump_type }}"
+          TAG_NAME="${{ steps.create-tag.outputs.tag_name }}"
+
+          # Configure git
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Add and commit changes
+          git add version.json public/version.json package.json
+          git commit -m "🚀 Bump $BUMP_TYPE version to $NEW_VERSION after tagging $TAG_NAME
+
+          - Tagged current version: $TAG_NAME
+          - Bumped $BUMP_TYPE version: $NEW_VERSION
+          - Reset build number to 1
+
+          [skip ci]"
+
+          # Push changes
+          git push origin main
+
+          echo "✅ Version bumped and pushed to main"
+
+      - name: Create GitHub Release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tagName = '${{ steps.create-tag.outputs.tag_name }}';
+            const newVersion = '${{ steps.new-version.outputs.new_version }}';
+            const bumpType = '${{ github.event.inputs.bump_type }}';
+
+            // Create release for the tag
+            const release = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tagName,
+              name: `Release ${tagName}`,
+              body: `🚀 **Release ${tagName}**
+              
+              This release was created automatically by the manual version workflow.
+              
+              **Next Development Version:** ${newVersion} (${bumpType} bump)
+              
+              ---
+              
+              ### Changes
+              - Tagged current version as ${tagName}
+              - Bumped ${bumpType} version to ${newVersion}
+              - Reset build number to 1 for new development cycle`,
+              draft: false,
+              prerelease: false
+            });
+
+            console.log(`✅ GitHub Release created: ${release.data.html_url}`);
+
+      - name: Summary
+        run: |
+          echo "## 🎉 Version Tag & Bump Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### What happened:" >> $GITHUB_STEP_SUMMARY
+          echo "1. 🏷️ **Tagged current version:** \`${{ steps.create-tag.outputs.tag_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "2. ⬆️ **Bump type:** \`${{ github.event.inputs.bump_type }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. 🆕 **New version:** \`${{ steps.new-version.outputs.new_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "4. 📦 **GitHub Release:** Created for tag \`${{ steps.create-tag.outputs.tag_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next steps:" >> $GITHUB_STEP_SUMMARY
+          echo "- The main branch now has version \`${{ steps.new-version.outputs.new_version }}-build.1\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Future PRs will auto-increment the build number" >> $GITHUB_STEP_SUMMARY
+          echo "- You can find the release at: [Releases](https://github.com/${{ github.repository }}/releases)" >> $GITHUB_STEP_SUMMARY

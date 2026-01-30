@@ -1,0 +1,38 @@
+/* Gradient border styles */
+.gradient-border-card {
+  position: relative;
+  background: #131313;
+  z-index: 0;
+}
+
+.gradient-border-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px; /* Border thickness */
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    #f55577 0deg,
+    #f9ba34 67.5deg,
+    #3dc1a9 152.3deg,
+    #3b8ac5 218.1deg,
+    #9153c1 290.8deg,
+    #f55a74 346.2deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  opacity: 1; /* Start with invisible border */
+  /* transition: opacity 0.3s ease; */
+}
+
+.gradient-border-card:hover::before {
+  opacity: 1; /* Show gradient border on hover */
+}

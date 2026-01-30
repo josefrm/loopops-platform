@@ -1,0 +1,168 @@
+
+project_id = "penzhrrqhmjgwcqnugeq"
+
+[api]
+enabled = true
+# Schemas to expose in your API. Tables, views and stored procedures in these schemas will get API endpoints.
+# public and storage are always included.
+schemas = ["public", "v2", "storage", "loopops"]
+
+[db]
+major_version = 15
+
+[functions.ai-agent-chat]
+verify_jwt = false
+
+[functions.store-jira-credentials]
+verify_jwt = false
+
+[functions.update-jira-credentials]
+verify_jwt = false
+
+[functions.fetch-coordinator-agents]
+verify_jwt = false
+
+[functions.fetch-secrets]
+verify_jwt = false
+
+[functions.get-or-create-session]
+verify_jwt = false
+
+[functions.process-message]
+verify_jwt = false
+
+[functions.get-session-messages]
+verify_jwt = false
+
+[functions.chat-with-agents]
+verify_jwt = false
+
+[functions.chat-with-agents-streaming]
+verify_jwt = false
+
+[functions.get-knowledge-documents]
+verify_jwt = false
+
+[functions.create-workspace-storage-bucket]
+verify_jwt = false
+
+[functions.process-uploaded-document]
+verify_jwt = false
+
+[functions.get-jira-metadata]
+verify_jwt = false
+
+[functions.get-jira-ticket-details]
+verify_jwt = false
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:8080", "http://127.0.0.1:5173"]
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+[auth.external.google]
+enabled = true
+client_id = "env(GOOGLE_CLIENT_ID)"
+secret = "env(GOOGLE_CLIENT_SECRET)"
+
+[functions.update-profile-v2]
+verify_jwt = false
+
+[functions.create-project-v2]
+verify_jwt = false
+
+[functions.update-onboarding-stage]
+verify_jwt = false
+
+[functions.get-deliverables-v2]
+enabled = true
+verify_jwt = true
+import_map = "./functions/get-deliverables-v2/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/get-deliverables-v2/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/get-deliverables-v2/*.html" ]
+
+[functions.get-files-v2]
+enabled = true
+verify_jwt = true
+import_map = "./functions/get-files-v2/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/get-files-v2/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/get-files-v2/*.html" ]
+
+[functions.get-loops-v2]
+enabled = true
+verify_jwt = true
+import_map = "./functions/get-loops-v2/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/get-loops-v2/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/get-loops-v2/*.html" ]
+
+[functions.create-mindspace-bucket]
+verify_jwt = false
+
+[functions.create-project-stages]
+verify_jwt = false
+
+[functions.create-project-agents]
+verify_jwt = false
+
+[functions.create-project-threads]
+verify_jwt = false
+
+[functions.create-stage-buckets]
+verify_jwt = false
+
+[functions.create-project-bucket]
+verify_jwt = false
+
+[functions.setup-project-loopops]
+enabled = true
+verify_jwt = false
+
+[functions.get-project-stages]
+enabled = true
+verify_jwt = true
+import_map = "./functions/get-project-stages/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/get-project-stages/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/get-project-stages/*.html" ]
+
+[functions.copy-mindspace-to-stage]
+enabled = true
+verify_jwt = true
+import_map = "./functions/copy-mindspace-to-stage/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/copy-mindspace-to-stage/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/copy-mindspace-to-stage/*.html" ]
+
+[functions.convert-to-key-deliverable]
+enabled = true
+verify_jwt = true
+import_map = "./functions/convert-to-key-deliverable/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/convert-to-key-deliverable/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/convert-to-key-deliverable/*.html" ]

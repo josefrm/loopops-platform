@@ -1,0 +1,41 @@
+/* AIChatBox Animation Styles */
+
+.ai-chatbox-container {
+  position: relative;
+}
+
+.ai-chatbox-container:focus-within::after {
+  background-position: 100% 100%;
+  transition-delay: 0s;
+}
+
+.ai-chatbox-container::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  inset: -1px;
+  border-radius: calc(var(--radius-lg, 8px) + 1px);
+  background: linear-gradient(
+    -45deg,
+    var(--capra-ramp-5, #ff6b6b) 0%,
+    var(--capra-ramp-4, #4ecdc4) 8%,
+    var(--capra-ramp-3, #45b7d1) 17%,
+    var(--capra-ramp-2, #96ceb4) 25%,
+    var(--capra-ramp-1, #feca57) 33%,
+    var(--vscode-foreground, #333) 34%,
+    var(--vscode-foreground, #333) 40%,
+    var(--vscode-panel-border, #ddd) 45%,
+    var(--vscode-panel-border, #ddd) 100%
+  );
+  background-size: 400% 200%;
+  background-position: 0 0;
+  transition: background-position 1s ease;
+  transition-delay: 0.1s;
+  animation-fill-mode: backwards;
+  z-index: 0;
+}
+
+.ai-chatbox-prompt {
+  background: var(--vscode-editor-background, #fff);
+  border-radius: var(--radius-lg, 8px);
+}
