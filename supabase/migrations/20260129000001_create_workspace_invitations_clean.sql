@@ -202,6 +202,4 @@ COMMENT ON COLUMN loopops.workspace_invitations.code IS 'Código alfanumérico d
 
 COMMENT ON COLUMN loopops.workspace_invitations.used IS 'Indica si el código ya fue usado (one-time use)';
 
-COMMENT ON COLUMN loopops.workspace_invitations.access_type IS 'Tipo de acceso otorgado: invitation';
-
 COMMENT ON FUNCTION loopops.generate_invitation_code () IS 'Genera un código alfanumérico único de 8 caracteres para invitaciones (sin I, O, 0, 1, L)';
