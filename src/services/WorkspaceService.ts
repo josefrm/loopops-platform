@@ -1,4 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
+import {
+  GetWorkspaceProjectsResponse,
+  WorkspaceWithProjects,
+} from '@/stores/workspaceProjectStore';
 
 /**
  * Request interface for creating a workspace
@@ -707,5 +711,39 @@ export class WorkspaceService {
     }
 
     return data as GetInvitationsResponse;
+  }
+
+  /**
+   * Gets all workspaces with their projects for the authenticated user
+   * Uses the get-workspace-projects edge function
+   *
+   * @returns Promise with workspaces and their projects including user roles
+   * @throws Error if the request fails
+   */
+  static async getWorkspaceProjects(): Promise<GetWorkspaceProjectsResponse> {
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session) {
+      throw new Error('You must be logged in to fetch workspace projects');
+    }
+
+    const { data, error } = await supabase.functions.invoke(
+      'get-workspace-projects',
+      {
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
+      },
+    );
+
+    if (error) {
+      console.error('Error fetching workspace projects:', error);
+      throw new Error(error.message || 'Failed to fetch workspace projects');
+    }
+
+    if (!data || !data.workspaces) {
+      throw new Error('Invalid response from get-workspace-projects');
+    }
+
+    return data as GetWorkspaceProjectsResponse;
   }
 }

@@ -131,7 +131,7 @@ export const useLoopSessions = ({ stage }: UseLoopSessionsProps) => {
       };
 
       const createdDate = parseDate(
-        lastMessage?.created_at || session.created_at,
+        session.updated_at || lastMessage?.created_at,
       );
 
       return {

@@ -317,29 +317,6 @@ export const ChatInterface = forwardRef<HTMLDivElement, ChatInterfaceProps>(
         useUIStore.getState().setStreaming(sessionId, agentMessage.id);
         useUIStore.getState().setTyping(sessionId, true);
 
-        // Update session name with first user message
-        const userMessages = chat.messages.filter((m) => m.sender === 'user');
-        if (
-          userMessages.length === 0 &&
-          (chat.title === 'Loop' || chat.title === 'New Chat')
-        ) {
-          // This is the first user message, update session name
-          const newTitle =
-            messageContent.length > 50
-              ? messageContent.substring(0, 50) + '...'
-              : messageContent;
-
-          // Update in backend
-          updateSessionNameMutation.mutate(
-            { sessionId, sessionName: newTitle },
-            {
-              onSuccess: () => {
-                // Update local store
-                chat.updateTitle(newTitle);
-              },
-            },
-          );
-        }
 
         try {
           let fileKeys: string[] = [];

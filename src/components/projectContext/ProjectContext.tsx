@@ -14,10 +14,7 @@ import { useSessionStore } from '@/features/chat/stores/sessionStore';
 import { useUIStore } from '@/features/chat/stores/uiStore';
 import { useToast } from '@/hooks/use-toast';
 import { useBulkActions } from '@/hooks/useBulkActions';
-import {
-  useAvailableProjects,
-  useProjectLoading,
-} from '@/hooks/useCurrentProject';
+import { useAvailableProjects } from '@/hooks/useCurrentProject';
 import { useFileFilters } from '@/hooks/useFileFilters';
 import { useMetadataExtraction } from '@/hooks/useMetadataExtraction';
 import { useProjectContextFileUpload } from '@/hooks/useProjectContextFileUpload';
@@ -26,10 +23,10 @@ import { useWalkthrough } from '@/hooks/useWalkthrough';
 import { ProjectContextDocument } from '@/models/ProjectContextDocument';
 import { useCreateOrGetSession } from '@/queries/sessionNavigationQueries';
 import {
+  useCanCreateProject,
   useCreateProjectMutation,
-  useProjectsQuery,
   useStagesQuery,
-  useWorkspacesQuery,
+  useWorkspaceProjectsQuery,
 } from '@/queries/workspaceProjectQueries';
 import { ProjectStageService } from '@/services/ProjectStageService';
 import { StorageService } from '@/services/StorageService';
@@ -353,16 +350,17 @@ const ProjectContextPage = () => {
   );
 
   // Use React Query for data fetching (auto-syncs with store)
-  const { isLoading: workspacesLoading } = useWorkspacesQuery();
+  // useWorkspaceProjectsQuery fetches workspaces AND projects in one call via get-workspace-projects edge function
+  const { isLoading: workspacesAndProjectsLoading } = useWorkspaceProjectsQuery();
+  const workspacesLoading = workspacesAndProjectsLoading;
+  const isLoadingProjects = workspacesAndProjectsLoading;
 
   // We default to the first stage for context if needed, but navigation is now independent
   const activeStage = stages.length > 0 ? stages[0] : null; // Fallback to first stage for logic needing a stage
 
   // Data fetching
-  useProjectsQuery();
   const { isLoading: stagesLoading } = useStagesQuery();
   const availableProjects = useAvailableProjects();
-  const isLoadingProjects = useProjectLoading();
 
   // Update stages loading state
   useEffect(() => {
@@ -371,6 +369,9 @@ const ProjectContextPage = () => {
 
   // Mutation for creating new projects
   const createProjectMutation = useCreateProjectMutation();
+
+  // Check if user can create projects (owner only)
+  const canCreateProject = useCanCreateProject();
 
   const {
     stageTemplate,
@@ -765,6 +766,7 @@ const ProjectContextPage = () => {
               onProjectChange={handleProjectChange}
               onCreateNewProject={handleCreateNewProject}
               highlightProjectId={highlightProjectId}
+              canCreateProject={canCreateProject}
             />
 
             {/* Third Row: Category Navigation Tabs */}
