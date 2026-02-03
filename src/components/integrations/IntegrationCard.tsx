@@ -23,6 +23,7 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({
   icon,
   connected,
   type = 'integration',
+  prompt,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -82,7 +83,7 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({
     });
   };
 
-  const integration = { id, name, description, icon, connected };
+  const integration = { id, name, description, icon, connected, type, prompt };
   return (
     <div className="bg-white border border-neutral-grayscale-30 rounded-[12px] sm:rounded-[14px] lg:rounded-[16px] p-4 sm:p-5 lg:p-6 shadow-[0px_8px_20px_0px_rgba(0,0,0,0.05)] flex flex-col h-full hover:shadow-[0px_12px_24px_0px_rgba(0,0,0,0.08)] transition-all duration-300">
       <div className="flex flex-col gap-3 sm:gap-3.5 lg:gap-4 h-full">
@@ -172,24 +173,7 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({
           </div>
 
           <div className="flex gap-2 items-center justify-end w-full sm:w-auto">
-            {type === 'prompt' ? (
-              <button
-                onClick={handleGenerateCode}
-                disabled={generateCodeMutation.isPending}
-                className="bg-[#BC43B2] rounded-[20px] sm:rounded-[24px] lg:rounded-[26.5px] px-3 sm:px-3.5 lg:px-4 py-1.5 sm:py-2 h-7 sm:h-8 min-w-[85px] sm:min-w-[100px] flex items-center justify-center gap-1.5 hover:bg-[#A33A9E] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <Sparkles
-                  className={`w-3 h-3 sm:w-3.5 sm:h-3.5 text-white ${
-                    generateCodeMutation.isPending ? 'animate-spin' : ''
-                  }`}
-                />
-                <p className="font-bold text-[10px] sm:text-[11px] leading-normal tracking-[-0.33px] text-white">
-                  {generateCodeMutation.isPending
-                    ? 'Generating...'
-                    : 'Generate Code'}
-                </p>
-              </button>
-            ) : connected ? (
+            {connected ? (
               <>
                 <button
                   onClick={handleDisconnect}

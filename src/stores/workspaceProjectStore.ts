@@ -27,7 +27,22 @@ export interface Project {
   description?: string;
   status?: string;
   workspace_id: string;
+  role?: 'owner' | 'member' | string;
   created_at?: string;
+}
+
+export interface WorkspaceWithProjects {
+  workspace_id: string;
+  workspace_name: string;
+  projects: {
+    project_id: string;
+    project_name: string;
+    role: 'owner' | 'member' | string;
+  }[];
+}
+
+export interface GetWorkspaceProjectsResponse {
+  workspaces: WorkspaceWithProjects[];
 }
 
 export interface Stage {

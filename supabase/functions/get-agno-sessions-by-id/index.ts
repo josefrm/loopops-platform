@@ -49,17 +49,16 @@ serve(async (req) => {
       workspace_id,
       project_id,
       component_id,
+      session_id,
       page,
-      limit,
-      msg_page,
-      msg_limit
+      limit
     } = requestBody;
 
-    // Validate required parameters
-    if (!user_id || !workspace_id || !project_id) {
+    // Validate: need either (user_id + workspace_id + project_id) OR session_id
+    if (!session_id && (!user_id || !workspace_id || !project_id)) {
       return new Response(
         JSON.stringify({
-          error: 'Missing required parameters: user_id, workspace_id, and project_id are required',
+          error: 'Missing required parameters: either session_id OR (user_id, workspace_id, project_id) are required',
         }),
         {
           status: 400,
@@ -68,37 +67,32 @@ serve(async (req) => {
       );
     }
 
-    // Set defaults for SESSION pagination
+    // Set defaults for pagination
     const pageNum = page ? Math.max(1, parseInt(page, 10)) : 1;
-    const limitNum = limit ? Math.max(1, parseInt(limit, 10)) : 10;
-
-    // Set defaults for MESSAGE pagination
-    const msgPageNum = msg_page ? Math.max(1, parseInt(msg_page, 10)) : 1;
-    const msgLimitNum = msg_limit ? Math.max(1, parseInt(msg_limit, 10)) : 20;
+    const limitNum = limit ? Math.max(1, parseInt(limit, 10)) : 20;
 
     console.log(
-      `Querying agno_sessions. Session Page: ${pageNum}, Msg Page: ${msgPageNum}`,
+      `Querying chat_history - session_id: ${session_id || 'null'}, user_id: ${user_id || 'null'}, workspace_id: ${workspace_id || 'null'}, project_id: ${project_id || 'null'}, component_id: ${component_id || 'null'}, page: ${pageNum}, limit: ${limitNum}`,
     );
 
-    // Query RPC
-    const { data: rpcSessions, error: rpcError } = await supabase.rpc('get_agno_sessions', {
-      p_user_id: user_id,
-      p_workspace_id: workspace_id,
-      p_project_id: project_id,
+    const { data: messages, error: rpcError } = await supabase.rpc('get_chat_history', {
+      p_user_id: user_id || null,
+      p_workspace_id: workspace_id || null,
+      p_project_id: project_id || null,
       p_component_id: component_id || null,
+      p_session_id: session_id || null,
       p_page: pageNum,
       p_limit: limitNum,
-      p_msg_page: msgPageNum,
-      p_msg_limit: msgLimitNum
     });
 
     if (rpcError) {
-      console.error('Error calling get_agno_sessions RPC:', JSON.stringify(rpcError, null, 2));
+      console.error('Error calling get_chat_history RPC:', JSON.stringify(rpcError, null, 2));
       return new Response(
         JSON.stringify({
-          error: 'Failed to query ai.agno_sessions',
+          error: 'Failed to query chat history',
           details: rpcError.message || JSON.stringify(rpcError),
-          hint: 'Ensure database migration is applied for updated get_agno_sessions signature.',
+          code: rpcError.code,
+          hint: rpcError.hint || 'The get_chat_history PostgreSQL function must be created. Run: supabase db push',
         }),
         {
           status: 500,
@@ -107,39 +101,41 @@ serve(async (req) => {
       );
     }
 
-    const rpcResults = rpcSessions || [];
-    const totalCount = rpcResults.length > 0 && rpcResults[0].total_count
-      ? parseInt(rpcResults[0].total_count, 10)
+    const results = messages || [];
+
+    // Extract total_count from first result
+    const totalCount = results.length > 0 && results[0].total_count
+      ? parseInt(results[0].total_count, 10)
       : 0;
 
-    const sessions = rpcResults.map((result: any) => {
-      let session: any = {};
-      try {
-        session.chat_history = result.runs ?? [];
-        session.session_data = result.session_data ?? {};
-        session.session_id = result.session_id;
-        session.is_plugin = result.is_plugin;
-        session.chip_name = result.chip_name;
-        session.stage_name = result.stage_name;
-        session.total_count = result.total_count;
-        session.updated_at = result.updated_at;
-        session.messages_pagination = {
-          page: msgPageNum,
-          limit: msgLimitNum || 'all'
-        };
-      } catch (e) {
-        console.error('Error parsing session data:', e);
-      }
-      return session;
-    });
+    // Map results to clean format
+    const chatHistory = results.map((msg: any) => ({
+      id: msg.message_id,
+      session_id: msg.session_id,
+      session_name: msg.session_name,
+      stage_name: msg.stage_name,
+      role: msg.role,
+      content: msg.content,
+      created_at: msg.created_at,
+      files: msg.files,
+      metrics: msg.metrics,
+      provider_data: msg.provider_data,
+      is_plugin: msg.is_plugin,
+      chip_name: msg.chip_name,
+      from_history: false,
+      stop_after_tool_call: false,
+    }));
+
+    console.log('chat_history results:', chatHistory.length);
 
     return new Response(
       JSON.stringify({
-        data: sessions || [],
+        data: chatHistory,
         meta: {
+          total_count: totalCount,
           page: pageNum,
           limit: limitNum,
-          total_count: totalCount,
+          total_pages: Math.ceil(totalCount / limitNum),
         },
       }),
       {
@@ -154,6 +150,10 @@ serve(async (req) => {
         error: 'Internal server error',
         details: error instanceof Error ? error.message : String(error),
       }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
     );
   }
 });

@@ -16,6 +16,7 @@ type ContextHeaderProps = {
   onProjectChange: (projectId: string) => Promise<void>;
   onCreateNewProject: () => void;
   highlightProjectId: string | null;
+  canCreateProject?: boolean;
 };
 
 export const ContextHeader = forwardRef<HTMLDivElement, ContextHeaderProps>(
@@ -33,6 +34,7 @@ export const ContextHeader = forwardRef<HTMLDivElement, ContextHeaderProps>(
       onProjectChange,
       onCreateNewProject,
       highlightProjectId,
+      canCreateProject = true,
     },
     ref,
   ) => {
@@ -71,6 +73,7 @@ export const ContextHeader = forwardRef<HTMLDivElement, ContextHeaderProps>(
                 isOpen={isProjectSelectorOpen}
                 onOpenChange={onProjectSelectorOpenChange}
                 highlightProjectId={highlightProjectId}
+                canCreateProject={canCreateProject}
               />
             </div>
           </div>

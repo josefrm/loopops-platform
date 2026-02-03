@@ -20,6 +20,7 @@ interface ProjectSelectorProps {
   isOpen?: boolean; // Controlled open state
   onOpenChange?: (open: boolean) => void; // Controlled open change handler
   highlightProjectId?: string | null; // Project ID to highlight/blink
+  canCreateProject?: boolean; // Whether user can create new projects (owner only)
 }
 
 export const ProjectSelector: React.FC<ProjectSelectorProps> = ({
@@ -32,6 +33,7 @@ export const ProjectSelector: React.FC<ProjectSelectorProps> = ({
   isOpen,
   onOpenChange,
   highlightProjectId,
+  canCreateProject = true,
 }) => {
   const [blinkingId, setBlinkingId] = useState<string | null>(null);
 
@@ -128,18 +130,20 @@ export const ProjectSelector: React.FC<ProjectSelectorProps> = ({
           </SelectItem>
         ))}
 
-        {/* Create new project option */}
-        <SelectItem
-          key="__create_new__"
-          value="__create_new__"
-          className="p-loop-2 text-md rounded-md cursor-pointer transition-all duration-200 bg-brand-accent-50 focus:bg-brand-accent-10 focus:text-brand-accent-60 data-[state=checked]:bg-brand-accent-10 data-[state=checked]:text-brand-accent-60 hover:bg-brand-accent-15 hover:bg-neutral-grayscale-90 hover:text-brand-accent-90 border-t border-neutral-grayscale-20 mt-1 pt-loop-2 [&>span]:w-full [&>span]:flex [&>span]:justify-center"
-        >
-          <div className="flex items-center justify-center w-full">
-            <span className="flex font-medium text-base items-center gap-2 text-neutral-grayscale-0">
-              <PlusIcon width={16} height={16} /> Create new Project
-            </span>
-          </div>
-        </SelectItem>
+        {/* Create new project option - only shown if user is owner */}
+        {canCreateProject && (
+          <SelectItem
+            key="__create_new__"
+            value="__create_new__"
+            className="p-loop-2 text-md rounded-md cursor-pointer transition-all duration-200 bg-brand-accent-50 focus:bg-brand-accent-10 focus:text-brand-accent-60 data-[state=checked]:bg-brand-accent-10 data-[state=checked]:text-brand-accent-60 hover:bg-brand-accent-15 hover:bg-neutral-grayscale-90 hover:text-brand-accent-90 border-t border-neutral-grayscale-20 mt-1 pt-loop-2 [&>span]:w-full [&>span]:flex [&>span]:justify-center"
+          >
+            <div className="flex items-center justify-center w-full">
+              <span className="flex font-medium text-base items-center gap-2 text-neutral-grayscale-0">
+                <PlusIcon width={16} height={16} /> Create new Project
+              </span>
+            </div>
+          </SelectItem>
+        )}
       </SelectContent>
     </Select>
   );

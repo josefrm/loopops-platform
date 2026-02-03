@@ -4,9 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { ProjectStageService } from '@/services/ProjectStageService';
 import { WorkspaceService } from '@/services/WorkspaceService';
 import {
+  GetWorkspaceProjectsResponse,
   Project,
   Stage,
   Workspace,
+  WorkspaceWithProjects,
   useWorkspaceProjectStore,
 } from '@/stores/workspaceProjectStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -30,6 +32,11 @@ export const stageQueryKeys = {
   all: ['stages'] as const,
   list: (projectId: string) =>
     [...stageQueryKeys.all, 'list', projectId] as const,
+};
+
+export const workspaceProjectsQueryKeys = {
+  all: ['workspace-projects'] as const,
+  list: () => [...workspaceProjectsQueryKeys.all, 'list'] as const,
 };
 
 /**
@@ -293,6 +300,143 @@ export const useStagesQuery = () => {
 };
 
 /**
+ * Fetch all workspaces with their projects using the get-workspace-projects edge function
+ * Returns workspaces with projects including user roles for each project
+ */
+export const useWorkspaceProjectsQuery = () => {
+  const { isFullyAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const {
+    setWorkspaces,
+    setProjects,
+    setCurrentWorkspaceId,
+    setCurrentProjectId,
+    setWorkspacesLoading,
+    setWorkspacesError,
+    setProjectsLoading,
+    setProjectsError,
+    currentWorkspaceId,
+    currentProjectId,
+  } = useWorkspaceProjectStore();
+
+  const query = useQuery({
+    queryKey: workspaceProjectsQueryKeys.list(),
+    queryFn: async (): Promise<GetWorkspaceProjectsResponse> => {
+      return WorkspaceService.getWorkspaceProjects();
+    },
+    enabled: isFullyAuthenticated,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Sync query results to store
+  useEffect(() => {
+    setWorkspacesLoading(query.isLoading);
+    setProjectsLoading(query.isLoading);
+  }, [query.isLoading, setWorkspacesLoading, setProjectsLoading]);
+
+  useEffect(() => {
+    if (query.error) {
+      const errorMessage =
+        query.error instanceof Error
+          ? query.error.message
+          : 'Failed to load workspace projects';
+      setWorkspacesError(errorMessage);
+      setProjectsError(errorMessage);
+      toast({
+        title: 'Error',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+    } else {
+      setWorkspacesError(null);
+      setProjectsError(null);
+    }
+  }, [query.error, setWorkspacesError, setProjectsError, toast]);
+
+  // Effect to set workspaces when data arrives
+  useEffect(() => {
+    if (query.data?.workspaces) {
+      // Transform workspaces for the store
+      const workspaces: Workspace[] = query.data.workspaces.map((ws) => ({
+        id: ws.workspace_id,
+        name: ws.workspace_name,
+        organization: ws.workspace_name,
+        role: ws.projects.some((p) => p.role === 'owner') ? 'owner' : 'member',
+      }));
+      setWorkspaces(workspaces);
+
+      // Auto-select first workspace if none selected
+      if (!currentWorkspaceId && workspaces.length > 0) {
+        setCurrentWorkspaceId(workspaces[0].id);
+      }
+      // Validate current selection still exists
+      else if (
+        currentWorkspaceId &&
+        !workspaces.find((w) => w.id === currentWorkspaceId)
+      ) {
+        setCurrentWorkspaceId(workspaces.length > 0 ? workspaces[0].id : null);
+      }
+    }
+  }, [query.data, setWorkspaces, currentWorkspaceId, setCurrentWorkspaceId]);
+
+  // Effect to update projects when workspace changes or data arrives
+  useEffect(() => {
+    if (!query.data?.workspaces || !currentWorkspaceId) return;
+
+    const currentWs = query.data.workspaces.find(
+      (ws) => ws.workspace_id === currentWorkspaceId,
+    );
+
+    if (currentWs) {
+      const projects: Project[] = currentWs.projects.map((p) => ({
+        id: p.project_id,
+        name: p.project_name,
+        workspace_id: currentWs.workspace_id,
+        role: p.role,
+      }));
+      setProjects(projects);
+
+      // Auto-select first project if none selected or current doesn't exist in new workspace
+      const currentProjectExists = projects.find((p) => p.id === currentProjectId);
+      if (!currentProjectId || !currentProjectExists) {
+        setCurrentProjectId(projects.length > 0 ? projects[0].id : null);
+      }
+    } else {
+      // Workspace not found in data, clear projects
+      setProjects([]);
+      setCurrentProjectId(null);
+    }
+  }, [
+    query.data,
+    currentWorkspaceId,
+    currentProjectId,
+    setProjects,
+    setCurrentProjectId,
+  ]);
+
+  return query;
+};
+
+/**
+ * Get the current user's role for a specific project
+ */
+export const useProjectRole = (projectId: string | null) => {
+  const projects = useWorkspaceProjectStore((state) => state.projects);
+  const project = projects.find((p) => p.id === projectId);
+  return project?.role ?? null;
+};
+
+/**
+ * Check if user can create projects in current workspace (must be owner)
+ */
+export const useCanCreateProject = () => {
+  const currentWorkspace = useWorkspaceProjectStore((state) =>
+    state.getCurrentWorkspace(),
+  );
+  return currentWorkspace?.role === 'owner';
+};
+
+/**
  * Create a new project mutation
  */
 export const useCreateProjectMutation = () => {
@@ -318,6 +462,10 @@ export const useCreateProjectMutation = () => {
       // Invalidate projects query to refetch
       queryClient.invalidateQueries({
         queryKey: projectQueryKeys.list(currentWorkspaceId ?? ''),
+      });
+      // Also invalidate workspace-projects query
+      queryClient.invalidateQueries({
+        queryKey: workspaceProjectsQueryKeys.list(),
       });
 
       // Select the new project
