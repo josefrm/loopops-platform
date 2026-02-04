@@ -14,8 +14,7 @@ import {
 import { queryClient } from '@/lib/queryClient';
 import {
   useCreateProjectMutation,
-  useProjectsQuery,
-  useWorkspacesQuery,
+  useWorkspaceProjectsQuery,
 } from '@/queries/workspaceProjectQueries';
 import { useIntegrationsStore } from '@/stores/integrationsStore';
 import { useWorkspaceProjectStore } from '@/stores/workspaceProjectStore';
@@ -56,10 +55,9 @@ const IntegrationScreen = () => {
   );
 
   // Use React Query for data fetching (auto-syncs with store)
-  const { isLoading: workspacesLoading } = useWorkspacesQuery();
+  const { isLoading: workspacesLoading } = useWorkspaceProjectsQuery();
 
   // Data fetching
-  useProjectsQuery();
   const availableProjects = useAvailableProjects();
   const isLoadingProjects = useProjectLoading();
 

@@ -5,6 +5,7 @@ import {
   MindspaceDocument,
   mindspaceFileToDocument,
 } from '@/models/MindspaceDocument';
+import { useWorkspaceProjectsQuery } from '@/queries/workspaceProjectQueries';
 import { useWorkspaceProjectStore } from '@/stores/workspaceProjectStore';
 import {
   formatFileSize,
@@ -88,9 +89,7 @@ export const useMindspaceFileUpload = (
   const currentWorkspace = useWorkspaceProjectStore((state) =>
     state.getCurrentWorkspace(),
   );
-  const workspacesLoading = useWorkspaceProjectStore(
-    (state) => state.workspacesLoading,
-  );
+  const { isLoading: workspacesLoading } = useWorkspaceProjectsQuery();
   const selectedProject = useWorkspaceProjectStore((state) =>
     state.getCurrentProject(),
   );

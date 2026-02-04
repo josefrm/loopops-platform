@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
       ...(useProxy && {
         proxy: {
           '/api': {
-            target: 'https://loopops-282035616357.northamerica-south1.run.app',
+            target: env.VITE_BACKEND_API_URL,
             changeOrigin: true,
             secure: true,
             rewrite: (path) => path.replace(/^\/api/, ''),

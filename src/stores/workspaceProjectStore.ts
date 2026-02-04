@@ -57,45 +57,34 @@ export interface WorkspaceProjectState {
   // Workspace state
   workspaces: Workspace[];
   currentWorkspaceId: string | null;
-  workspacesLoading: boolean;
-  workspacesError: string | null;
 
   // Project state
   projects: Project[];
   currentProjectId: string | null;
-  projectsLoading: boolean;
-  projectsError: string | null;
 
   // Stage state
   stages: Stage[];
   currentStageId: number | null;
-  stagesLoading: boolean;
-  stagesError: string | null;
 }
 
 export interface WorkspaceProjectActions {
   // Workspace actions
   setWorkspaces: (workspaces: Workspace[]) => void;
   setCurrentWorkspaceId: (id: string | null) => void;
-  setWorkspacesLoading: (loading: boolean) => void;
-  setWorkspacesError: (error: string | null) => void;
 
   // Project actions
   setProjects: (projects: Project[]) => void;
   setCurrentProjectId: (id: string | null) => void;
-  setProjectsLoading: (loading: boolean) => void;
-  setProjectsError: (error: string | null) => void;
 
   // Stage actions
   setStages: (stages: Stage[]) => void;
   setCurrentStageId: (id: number | null) => void;
-  setStagesLoading: (loading: boolean) => void;
-  setStagesError: (error: string | null) => void;
 
   // Utility actions
   reset: () => void;
   clearWorkspaceData: () => void;
   clearProjectData: () => void;
+  setWorkspaceProjects: (data: GetWorkspaceProjectsResponse) => void;
 
   // Computed getters (for convenience, prefer using selectors)
   getCurrentWorkspace: () => Workspace | null;
@@ -110,18 +99,12 @@ export type WorkspaceProjectStore = WorkspaceProjectState &
 const initialState: WorkspaceProjectState = {
   workspaces: [],
   currentWorkspaceId: null,
-  workspacesLoading: false,
-  workspacesError: null,
 
   projects: [],
   currentProjectId: null,
-  projectsLoading: false,
-  projectsError: null,
 
   stages: [],
   currentStageId: null,
-  stagesLoading: false,
-  stagesError: null,
 };
 
 export const useWorkspaceProjectStore = create<WorkspaceProjectStore>()(
@@ -140,9 +123,6 @@ export const useWorkspaceProjectStore = create<WorkspaceProjectStore>()(
         }
       },
 
-      setWorkspacesLoading: (loading) => set({ workspacesLoading: loading }),
-      setWorkspacesError: (error) => set({ workspacesError: error }),
-
       // Project actions
       setProjects: (projects) => set({ projects }),
 
@@ -154,14 +134,9 @@ export const useWorkspaceProjectStore = create<WorkspaceProjectStore>()(
         }
       },
 
-      setProjectsLoading: (loading) => set({ projectsLoading: loading }),
-      setProjectsError: (error) => set({ projectsError: error }),
-
       // Stage actions
       setStages: (stages) => set({ stages }),
       setCurrentStageId: (id) => set({ currentStageId: id }),
-      setStagesLoading: (loading) => set({ stagesLoading: loading }),
-      setStagesError: (error) => set({ stagesError: error }),
 
       // Utility actions
       reset: () => set(initialState),
@@ -170,24 +145,75 @@ export const useWorkspaceProjectStore = create<WorkspaceProjectStore>()(
         set({
           workspaces: [],
           currentWorkspaceId: null,
-          workspacesError: null,
           projects: [],
           currentProjectId: null,
-          projectsError: null,
           stages: [],
           currentStageId: null,
-          stagesError: null,
         }),
 
       clearProjectData: () =>
         set({
           projects: [],
           currentProjectId: null,
-          projectsError: null,
           stages: [],
           currentStageId: null,
-          stagesError: null,
         }),
+
+      setWorkspaceProjects: (data) => {
+        const { currentWorkspaceId, currentProjectId } = get();
+
+        // 1. Transform and set workspaces
+        const workspaces: Workspace[] = data.workspaces.map((ws) => ({
+          id: ws.workspace_id,
+          name: ws.workspace_name,
+          organization: ws.workspace_name,
+          role: ws.projects.some((p) => p.role === 'owner')
+            ? ('owner' as const)
+            : ('member' as const),
+        }));
+
+        let nextWorkspaceId = currentWorkspaceId;
+        // Auto-select first workspace if none selected or if current no longer exists
+        if (workspaces.length > 0) {
+          if (!currentWorkspaceId || !workspaces.find((w) => w.id === currentWorkspaceId)) {
+            nextWorkspaceId = workspaces[0].id;
+          }
+        } else {
+          nextWorkspaceId = null;
+        }
+
+        // 2. Find projects for the selected workspace
+        const currentWsData = data.workspaces.find(
+          (ws) => ws.workspace_id === nextWorkspaceId,
+        );
+
+        const projects: Project[] = currentWsData
+          ? currentWsData.projects.map((p) => ({
+              id: p.project_id,
+              name: p.project_name,
+              workspace_id: nextWorkspaceId!,
+              role: p.role,
+            }))
+          : [];
+
+        let nextProjectId = currentProjectId;
+        // Auto-select first project if none selected or current doesn't exist in new workspace
+        if (projects.length > 0) {
+          if (!currentProjectId || !projects.find((p) => p.id === currentProjectId)) {
+            nextProjectId = projects[0].id;
+          }
+        } else {
+          nextProjectId = null;
+        }
+
+        // 3. Batch update state
+        set({
+          workspaces,
+          currentWorkspaceId: nextWorkspaceId,
+          projects,
+          currentProjectId: nextProjectId,
+        });
+      },
 
       // Computed getters
       getCurrentWorkspace: () => {
