@@ -68,7 +68,7 @@ export class StageTemplateService {
     }
 
     const response = await callBackendApi<CreateSessionResponse>(
-      '/v1/sessions',
+      '/api/v1/sessions',
       'POST',
       body,
       {
