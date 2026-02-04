@@ -4,7 +4,13 @@ import * as jose from 'https://deno.land/x/jose@v4.14.4/index.ts'
 console.log('main function started')
 
 const JWT_SECRET = Deno.env.get('JWT_SECRET')
+const JWT_JWKS_URL = Deno.env.get('JWT_JWKS_URL') // e.g. https://<project-ref>.supabase.co/auth/v1/.well-known/jwks.json
 const VERIFY_JWT = Deno.env.get('VERIFY_JWT') === 'true'
+
+// Use JWKS (new signing keys) when URL is set; otherwise legacy JWT secret (local/dev)
+const projectJWKS = JWT_JWKS_URL
+  ? jose.createRemoteJWKSet(new URL(JWT_JWKS_URL))
+  : null
 
 function getAuthToken(req: Request) {
   const authHeader = req.headers.get('authorization')
@@ -19,10 +25,18 @@ function getAuthToken(req: Request) {
 }
 
 async function verifyJWT(jwt: string): Promise<boolean> {
-  const encoder = new TextEncoder()
-  const secretKey = encoder.encode(JWT_SECRET)
   try {
-    await jose.jwtVerify(jwt, secretKey)
+    if (projectJWKS) {
+      await jose.jwtVerify(jwt, projectJWKS)
+    } else {
+      if (!JWT_SECRET) {
+        console.error('Neither JWT_JWKS_URL nor JWT_SECRET is set')
+        return false
+      }
+      const encoder = new TextEncoder()
+      const secretKey = encoder.encode(JWT_SECRET)
+      await jose.jwtVerify(jwt, secretKey)
+    }
   } catch (err) {
     console.error(err)
     return false
