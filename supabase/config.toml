@@ -55,6 +55,123 @@ verify_jwt = false
 [functions.get-jira-ticket-details]
 verify_jwt = false
 
+[functions.accept-workspace-invitation]
+verify_jwt = false
+
+[functions.bulk-download-project-files]
+verify_jwt = false
+
+[functions.complete-walkthrough]
+verify_jwt = false
+
+[functions.convert-to-deliverable]
+verify_jwt = false
+
+[functions.create-agent]
+verify_jwt = false
+
+[functions.create-mindspace-category]
+verify_jwt = false
+
+[functions.create-mindspace-file]
+verify_jwt = false
+
+[functions.create-team]
+verify_jwt = false
+
+[functions.create-workspace-invitation]
+verify_jwt = false
+
+[functions.create-workspace-v2]
+verify_jwt = false
+
+[functions.delete-mindspace-file]
+verify_jwt = false
+
+[functions.delete-project-files]
+verify_jwt = false
+
+[functions.delete-user]
+verify_jwt = false
+
+[functions.download-mindspace-files]
+verify_jwt = false
+
+[functions.download-project-files]
+verify_jwt = false
+
+[functions.extract-mindspace-metadata]
+verify_jwt = false
+
+[functions.generate-team-prompt]
+verify_jwt = false
+
+[functions.get_workspace_credentials]
+verify_jwt = false
+
+[functions.get_workspace_teams]
+verify_jwt = false
+
+[functions.get_workspace_teams_v2]
+verify_jwt = false
+
+[functions.get-agents-by-workspace]
+verify_jwt = false
+
+[functions.get-agno-sessions]
+verify_jwt = false
+
+[functions.get-jira-projects-by-workspace]
+verify_jwt = false
+
+[functions.get-jira-tickets]
+verify_jwt = false
+
+[functions.get-jira-tickets-by-project-worspace]
+verify_jwt = false
+
+[functions.get-llm-models]
+verify_jwt = false
+
+[functions.get-mindspace-categories]
+verify_jwt = false
+
+[functions.get-mindspace-files]
+verify_jwt = false
+
+[functions.get-onboarding-status]
+verify_jwt = false
+
+[functions.get-project-assets]
+verify_jwt = false
+
+[functions.get-workspace-projects]
+verify_jwt = false
+
+[functions.main]
+verify_jwt = false
+
+[functions.move-mindspace-files]
+verify_jwt = false
+
+[functions.process-documents]
+verify_jwt = false
+
+[functions.process-knowledge-base]
+verify_jwt = false
+
+[functions.update-agent]
+verify_jwt = false
+
+[functions.update-mindspace-file]
+verify_jwt = false
+
+[functions.upload-mindspace-file]
+verify_jwt = false
+
+[functions.upload-project-context-file]
+verify_jwt = false
+
 [auth]
 enabled = true
 site_url = "http://localhost:5173"
@@ -81,7 +198,7 @@ verify_jwt = false
 
 [functions.get-deliverables-v2]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/get-deliverables-v2/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -92,7 +209,7 @@ entrypoint = "./functions/get-deliverables-v2/index.ts"
 
 [functions.get-files-v2]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/get-files-v2/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -103,7 +220,7 @@ entrypoint = "./functions/get-files-v2/index.ts"
 
 [functions.get-loops-v2]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/get-loops-v2/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -136,7 +253,7 @@ verify_jwt = false
 
 [functions.get-project-stages]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/get-project-stages/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -147,7 +264,7 @@ entrypoint = "./functions/get-project-stages/index.ts"
 
 [functions.copy-mindspace-to-stage]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/copy-mindspace-to-stage/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -158,7 +275,7 @@ entrypoint = "./functions/copy-mindspace-to-stage/index.ts"
 
 [functions.convert-to-key-deliverable]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/convert-to-key-deliverable/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -169,7 +286,7 @@ entrypoint = "./functions/convert-to-key-deliverable/index.ts"
 
 [functions.get-agno-sessions-by-id]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/get-agno-sessions-by-id/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
