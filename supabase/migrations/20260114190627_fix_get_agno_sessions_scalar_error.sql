@@ -136,5 +136,5 @@ $$;
 GRANT EXECUTE ON FUNCTION public.get_agno_sessions(UUID, TEXT, TEXT, UUID, INTEGER, INTEGER) TO authenticated, anon, service_role;
 
 -- Add comment
-COMMENT ON FUNCTION public.get_agno_sessions IS 'Queries ai.agno_sessions table with filters for user_id, workspace_id, project_id, and optionally component_id. When component_id is NULL, returns all sessions with stage_name. Returns session_data as JSONB and stage_name as TEXT. Includes pagination and safely handles scalar runs values.';
+COMMENT ON FUNCTION public.get_agno_sessions(UUID, TEXT, TEXT, UUID, INTEGER, INTEGER) IS 'Queries ai.agno_sessions table with filters for user_id, workspace_id, project_id, and optionally component_id. When component_id is NULL, returns all sessions with stage_name. Returns session_data as JSONB and stage_name as TEXT. Includes pagination and safely handles scalar runs values.';
 

@@ -3,7 +3,7 @@
 -- Schema: loopops (consistent with other project tables)
 
 -- Create the table in the loopops schema
-CREATE TABLE loopops.plugin_auth_codes (
+CREATE TABLE IF NOT EXISTS loopops.plugin_auth_codes (
     code VARCHAR(6) PRIMARY KEY,
     user_id UUID NOT NULL,
     project_id UUID NOT NULL,
@@ -36,49 +36,46 @@ COMMENT ON COLUMN loopops.plugin_auth_codes.created_at IS 'Timestamp when this a
 
 COMMENT ON COLUMN loopops.plugin_auth_codes.updated_at IS 'Timestamp when this authentication code was last updated. Automatically updated on modifications.';
 
--- Add foreign key constraints
-ALTER TABLE loopops.plugin_auth_codes
-ADD CONSTRAINT fk_plugin_auth_codes_user_id
-FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
-
+-- Add foreign key constraints (idempotent)
+DO $$ BEGIN
+  ALTER TABLE loopops.plugin_auth_codes ADD CONSTRAINT fk_plugin_auth_codes_user_id FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 COMMENT ON CONSTRAINT fk_plugin_auth_codes_user_id ON loopops.plugin_auth_codes IS 'Ensures user_id references a valid user in the auth schema. Deletes auth codes when user is deleted.';
 
-ALTER TABLE loopops.plugin_auth_codes
-ADD CONSTRAINT fk_plugin_auth_codes_project_id
-FOREIGN KEY (project_id) REFERENCES loopops.projects(id) ON DELETE CASCADE;
-
+DO $$ BEGIN
+  ALTER TABLE loopops.plugin_auth_codes ADD CONSTRAINT fk_plugin_auth_codes_project_id FOREIGN KEY (project_id) REFERENCES loopops.projects(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 COMMENT ON CONSTRAINT fk_plugin_auth_codes_project_id ON loopops.plugin_auth_codes IS 'Ensures project_id references a valid project. Deletes auth codes when project is deleted.';
 
-ALTER TABLE loopops.plugin_auth_codes
-ADD CONSTRAINT fk_plugin_auth_codes_workspace_id
-FOREIGN KEY (workspace_id) REFERENCES loopops.workspaces(id) ON DELETE CASCADE;
-
+DO $$ BEGIN
+  ALTER TABLE loopops.plugin_auth_codes ADD CONSTRAINT fk_plugin_auth_codes_workspace_id FOREIGN KEY (workspace_id) REFERENCES loopops.workspaces(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 COMMENT ON CONSTRAINT fk_plugin_auth_codes_workspace_id ON loopops.plugin_auth_codes IS 'Ensures workspace_id references a valid workspace. Deletes auth codes when workspace is deleted.';
 
 -- Create indexes for performance
-CREATE INDEX idx_plugin_auth_codes_user_id ON loopops.plugin_auth_codes(user_id);
+CREATE INDEX IF NOT EXISTS idx_plugin_auth_codes_user_id ON loopops.plugin_auth_codes(user_id);
 COMMENT ON INDEX loopops.idx_plugin_auth_codes_user_id IS 'Index on user_id for efficient user-specific queries and RLS policy enforcement.';
 
-CREATE INDEX idx_plugin_auth_codes_project_id ON loopops.plugin_auth_codes(project_id);
+CREATE INDEX IF NOT EXISTS idx_plugin_auth_codes_project_id ON loopops.plugin_auth_codes(project_id);
 COMMENT ON INDEX loopops.idx_plugin_auth_codes_project_id IS 'Index on project_id for efficient project-specific queries.';
 
-CREATE INDEX idx_plugin_auth_codes_workspace_id ON loopops.plugin_auth_codes(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_plugin_auth_codes_workspace_id ON loopops.plugin_auth_codes(workspace_id);
 COMMENT ON INDEX loopops.idx_plugin_auth_codes_workspace_id IS 'Index on workspace_id for efficient workspace-specific queries.';
 
-CREATE INDEX idx_plugin_auth_codes_expires_at ON loopops.plugin_auth_codes(expires_at);
+CREATE INDEX IF NOT EXISTS idx_plugin_auth_codes_expires_at ON loopops.plugin_auth_codes(expires_at);
 COMMENT ON INDEX loopops.idx_plugin_auth_codes_expires_at IS 'Index on expires_at for efficient cleanup of expired codes and expiration checks.';
 
-CREATE INDEX idx_plugin_auth_codes_user_project_plugin ON loopops.plugin_auth_codes(user_id, project_id, plugin_type);
+CREATE INDEX IF NOT EXISTS idx_plugin_auth_codes_user_project_plugin ON loopops.plugin_auth_codes(user_id, project_id, plugin_type);
 COMMENT ON INDEX loopops.idx_plugin_auth_codes_user_project_plugin IS 'Composite index for checking existing active codes per user, project, and plugin type.';
 
--- Add check constraints
-ALTER TABLE loopops.plugin_auth_codes
-ADD CONSTRAINT chk_plugin_auth_codes_expires_at_future
-CHECK (expires_at > NOW());
+-- Add check constraints (idempotent)
+DO $$ BEGIN
+  ALTER TABLE loopops.plugin_auth_codes ADD CONSTRAINT chk_plugin_auth_codes_expires_at_future CHECK (expires_at > NOW());
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-ALTER TABLE loopops.plugin_auth_codes
-ADD CONSTRAINT chk_plugin_auth_codes_plugin_type
-CHECK (plugin_type IN ('FIGMA', 'SLACK', 'NOTION', 'LINEAR'));
+DO $$ BEGIN
+  ALTER TABLE loopops.plugin_auth_codes ADD CONSTRAINT chk_plugin_auth_codes_plugin_type CHECK (plugin_type IN ('FIGMA', 'SLACK', 'NOTION', 'LINEAR'));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 COMMENT ON CONSTRAINT chk_plugin_auth_codes_expires_at_future ON loopops.plugin_auth_codes IS 'Ensures that authentication codes cannot be created with past expiration dates, preventing invalid codes.';
 
@@ -97,24 +94,28 @@ COMMENT ON VIEW public.loopops_plugin_auth_codes IS 'Public view for loopops.plu
 -- Add RLS (Row Level Security) policies if needed
 ALTER TABLE loopops.plugin_auth_codes ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view their own plugin auth codes" ON loopops.plugin_auth_codes;
 -- Policy: Users can only see their own auth codes
 CREATE POLICY "Users can view their own plugin auth codes" ON loopops.plugin_auth_codes
 FOR SELECT USING (auth.uid() = user_id);
 
 COMMENT ON POLICY "Users can view their own plugin auth codes" ON loopops.plugin_auth_codes IS 'RLS policy ensuring users can only query their own authentication codes based on user_id matching auth.uid().';
 
+DROP POLICY IF EXISTS "Users can insert their own plugin auth codes" ON loopops.plugin_auth_codes;
 -- Policy: Users can insert their own auth codes
 CREATE POLICY "Users can insert their own plugin auth codes" ON loopops.plugin_auth_codes
 FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 COMMENT ON POLICY "Users can insert their own plugin auth codes" ON loopops.plugin_auth_codes IS 'RLS policy allowing users to create authentication codes only for themselves.';
 
+DROP POLICY IF EXISTS "Users can update their own plugin auth codes" ON loopops.plugin_auth_codes;
 -- Policy: Users can update their own auth codes
 CREATE POLICY "Users can update their own plugin auth codes" ON loopops.plugin_auth_codes
 FOR UPDATE USING (auth.uid() = user_id);
 
 COMMENT ON POLICY "Users can update their own plugin auth codes" ON loopops.plugin_auth_codes IS 'RLS policy allowing users to modify only their own authentication codes.';
 
+DROP POLICY IF EXISTS "Users can delete their own plugin auth codes" ON loopops.plugin_auth_codes;
 -- Policy: Users can delete their own auth codes
 CREATE POLICY "Users can delete their own plugin auth codes" ON loopops.plugin_auth_codes
 FOR DELETE USING (auth.uid() = user_id);

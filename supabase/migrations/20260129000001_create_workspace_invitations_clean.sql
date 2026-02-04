@@ -61,8 +61,10 @@ CREATE INDEX IF NOT EXISTS idx_workspace_invitations_active ON loopops.workspace
 -- ============================================================================
 -- 3. CREATE PUBLIC VIEW
 -- ============================================================================
+-- Drop first so column renames (e.g. email -> invited_by_user_id) are allowed
+DROP VIEW IF EXISTS public.loopops_workspace_invitations;
 
-CREATE OR REPLACE VIEW public.loopops_workspace_invitations AS
+CREATE VIEW public.loopops_workspace_invitations AS
 SELECT *
 FROM loopops.workspace_invitations;
 
@@ -201,7 +203,5 @@ COMMENT ON COLUMN loopops.workspace_invitations.workspace_id IS 'Workspace que c
 COMMENT ON COLUMN loopops.workspace_invitations.code IS 'Código alfanumérico de 8 caracteres (ej: K7M2P9WQ)';
 
 COMMENT ON COLUMN loopops.workspace_invitations.used IS 'Indica si el código ya fue usado (one-time use)';
-
-COMMENT ON COLUMN loopops.workspace_invitations.access_type IS 'Tipo de acceso otorgado: invitation';
 
 COMMENT ON FUNCTION loopops.generate_invitation_code () IS 'Genera un código alfanumérico único de 8 caracteres para invitaciones (sin I, O, 0, 1, L)';
