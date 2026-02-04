@@ -1,5 +1,5 @@
 
-project_id = "penzhrrqhmjgwcqnugeq"
+project_id = "env(SUPABASE_PROJECT_REF)"
 
 [api]
 enabled = true
