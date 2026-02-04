@@ -1,0 +1,57 @@
+# Build frontend with env from GitHub Environment variables.
+# This ensures VITE_BACKEND_API_URL and other VITE_* come from GitHub, not from .env in the repo.
+#
+# Configure in GitHub: Settings → Environments → [e.g. production] → Environment variables:
+#   VITE_BACKEND_API_URL   (e.g. http://34.225.211.204/)
+#   VITE_SUPABASE_URL
+#   VITE_SUPABASE_ANON_KEY
+#   (and any other VITE_* your app needs at build time)
+
+name: Frontend Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build with GitHub env vars
+    runs-on: ubuntu-latest
+    environment: production
+
+    env:
+      VITE_BACKEND_API_URL: ${{ vars.VITE_BACKEND_API_URL }}
+      VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+      VITE_USE_PROXY: ${{ vars.VITE_USE_PROXY }}
+      VITE_SHOW_DEBUG_ROUTES: ${{ vars.VITE_SHOW_DEBUG_ROUTES }}
+      VITE_AUTH_REDIRECT_URL: ${{ vars.VITE_AUTH_REDIRECT_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # Ensure required vars are set for build (Vite inlines these)
+          VITE_BACKEND_API_URL: ${{ vars.VITE_BACKEND_API_URL }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/

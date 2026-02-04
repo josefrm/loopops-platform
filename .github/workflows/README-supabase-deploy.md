@@ -26,17 +26,16 @@ Usa un **Environment** (por ejemplo `production`) para centralizar secretos y va
 |----------|-------------|---------|
 | **SUPABASE_PROJECT_REF** | ID del proyecto (subdominio de la URL de Supabase). | Si tu URL es `https://rlnzqvrcygqleqyhdvek.supabase.co`, el ref es `rlnzqvrcygqleqyhdvek`. |
 
-### 4. Mismas variables que tu `.env` (opcional para este workflow)
+### 4. Variables para el frontend (recomendado: GitHub como fuente de verdad)
 
-Puedes añadir en el mismo Environment las mismas variables que usas en tu `.env` (para otros workflows o para tener todo centralizado):
+Para que el **build del frontend** use la URL del backend y Supabase correctas, configura las mismas variables en el **mismo Environment** (production). Así no dependes del `.env` en el repo (que está en `.gitignore`):
 
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-- `VITE_BACKEND_API_URL`
-- `VITE_USE_PROXY`
-- etc.
+- **`VITE_BACKEND_API_URL`** — URL base del backend (ej. `http://34.225.211.204/`)
+- **`VITE_SUPABASE_URL`**
+- **`VITE_SUPABASE_ANON_KEY`**
+- `VITE_USE_PROXY`, `VITE_SHOW_DEBUG_ROUTES`, `VITE_AUTH_REDIRECT_URL` (opcionales)
 
-Este workflow **solo necesita** `SUPABASE_ACCESS_TOKEN` (secret) y `SUPABASE_PROJECT_REF` (variable) para ejecutarse.
+El workflow **Frontend Build** (`frontend-build.yml`) hace `npm run build` inyectando estas variables desde el Environment, así que el valor que pongas en GitHub es el que se usa en la app desplegada.
 
 ## Resumen
 

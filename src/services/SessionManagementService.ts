@@ -44,7 +44,7 @@ export class SessionManagementService {
 
     try {
       const backendResponse = await callBackendApi<BackendSession>(
-        '/api/v1/sessions',
+        '/v1/sessions',
         'POST',
         {
           session_name: 'Main Thread',
@@ -84,7 +84,7 @@ export class SessionManagementService {
   ): Promise<SessionResponse> {
     try {
       const backendResponse = await callBackendApi<BackendSession>(
-        '/api/v1/sessions',
+        '/v1/sessions',
         'POST',
         {
           session_name: `Ticket ${ticketId}`,
@@ -123,7 +123,7 @@ export class SessionManagementService {
   static async getSessionById(sessionId: string): Promise<SessionWithContext> {
     try {
       const backendSession = await callBackendApi<BackendSession>(
-        `/api/v1/sessions/${sessionId}`,
+        `/v1/sessions/${sessionId}`,
         'GET',
         undefined,
         {
@@ -146,7 +146,7 @@ export class SessionManagementService {
   }
 
   static async deleteSession(sessionId: string): Promise<void> {
-    await callBackendApi(`/api/v1/sessions/${sessionId}`, 'DELETE', undefined, {
+    await callBackendApi(`/v1/sessions/${sessionId}`, 'DELETE', undefined, {
       timeout: 10000,
     });
   }
@@ -157,7 +157,7 @@ export class SessionManagementService {
   ): Promise<void> {
     try {
       await callBackendApi(
-        `/api/v1/sessions/${sessionId}`,
+        `/v1/sessions/${sessionId}`,
         'PATCH',
         {
           session_name: sessionName,
@@ -196,7 +196,7 @@ export class SessionManagementService {
           page: number;
           total_pages: number;
         };
-      }>('/api/v1/sessions', 'GET', undefined, {
+      }>('/v1/sessions', 'GET', undefined, {
         timeout: 15000,
         queryParams,
       });

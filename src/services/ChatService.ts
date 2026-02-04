@@ -144,7 +144,7 @@ export class ChatService {
         : { type: 'team' };
 
       response = await callBackendApi<GetSessionByIdResponse>(
-        `/api/v1/sessions/${sessionId}`,
+        `/v1/sessions/${sessionId}`,
         'GET',
         undefined,
         {
@@ -508,7 +508,7 @@ export class ChatService {
     request: GetSessionMessagesRequest,
   ): Promise<SessionMessage[]> {
     const runs = await callBackendApi<any[]>(
-      `/api/v1/sessions/${request.session_id}/runs`,
+      `/v1/sessions/${request.session_id}/runs`,
       'GET',
       undefined,
       {
