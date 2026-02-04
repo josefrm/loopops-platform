@@ -53,21 +53,25 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Add updated_at triggers to all tables
+DROP TRIGGER IF EXISTS update_onboarding_updated_at ON v2.onboarding;
 CREATE TRIGGER update_onboarding_updated_at
   BEFORE UPDATE ON v2.onboarding
   FOR EACH ROW
   EXECUTE FUNCTION v2.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_profile_updated_at ON v2.profile;
 CREATE TRIGGER update_profile_updated_at
   BEFORE UPDATE ON v2.profile
   FOR EACH ROW
   EXECUTE FUNCTION v2.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_workspace_updated_at ON v2.workspace;
 CREATE TRIGGER update_workspace_updated_at
   BEFORE UPDATE ON v2.workspace
   FOR EACH ROW
   EXECUTE FUNCTION v2.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_project_updated_at ON v2.project;
 CREATE TRIGGER update_project_updated_at
   BEFORE UPDATE ON v2.project
   FOR EACH ROW

@@ -40,6 +40,7 @@ ALTER TABLE loopops.project_buckets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE loopops.project_files ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for project_buckets
+DROP POLICY IF EXISTS "Users can view project buckets for accessible projects" ON loopops.project_buckets;
 -- Users can view project buckets for projects they have access to
 CREATE POLICY "Users can view project buckets for accessible projects"
 ON loopops.project_buckets
@@ -54,6 +55,7 @@ USING (
     )
 );
 
+DROP POLICY IF EXISTS "Service role can manage all project buckets" ON loopops.project_buckets;
 -- Service role can manage all project buckets
 CREATE POLICY "Service role can manage all project buckets"
 ON loopops.project_buckets
@@ -63,6 +65,7 @@ USING (true)
 WITH CHECK (true);
 
 -- RLS Policies for project_files
+DROP POLICY IF EXISTS "Users can view files in accessible project buckets" ON loopops.project_files;
 -- Users can view files in project buckets for accessible projects
 CREATE POLICY "Users can view files in accessible project buckets"
 ON loopops.project_files
@@ -78,6 +81,7 @@ USING (
     )
 );
 
+DROP POLICY IF EXISTS "Service role can manage all project files" ON loopops.project_files;
 -- Service role can manage all project files
 CREATE POLICY "Service role can manage all project files"
 ON loopops.project_files

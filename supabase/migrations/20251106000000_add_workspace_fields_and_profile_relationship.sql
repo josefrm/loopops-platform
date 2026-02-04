@@ -1,6 +1,6 @@
 -- Add name field to v2.workspace table
 ALTER TABLE v2.workspace 
-ADD COLUMN name text NOT NULL DEFAULT '';
+ADD COLUMN IF NOT EXISTS name text NOT NULL DEFAULT '';
 
 -- Create workspace_profile junction table
 CREATE TABLE IF NOT EXISTS v2.workspace_profile (
@@ -17,14 +17,15 @@ CREATE TABLE IF NOT EXISTS v2.workspace_profile (
 ALTER TABLE v2.workspace_profile ENABLE ROW LEVEL SECURITY;
 
 -- Add updated_at trigger to workspace_profile
+DROP TRIGGER IF EXISTS update_workspace_profile_updated_at ON v2.workspace_profile;
 CREATE TRIGGER update_workspace_profile_updated_at
   BEFORE UPDATE ON v2.workspace_profile
   FOR EACH ROW
   EXECUTE FUNCTION v2.update_updated_at_column();
 
 -- Add index for faster lookups
-CREATE INDEX idx_workspace_profile_workspace_id ON v2.workspace_profile(workspace_id);
-CREATE INDEX idx_workspace_profile_profile_id ON v2.workspace_profile(profile_id);
+CREATE INDEX IF NOT EXISTS idx_workspace_profile_workspace_id ON v2.workspace_profile(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_workspace_profile_profile_id ON v2.workspace_profile(profile_id);
 
 -- Add comments
 COMMENT ON TABLE v2.workspace_profile IS 'Junction table linking workspaces to profiles (users)';
@@ -33,6 +34,7 @@ COMMENT ON COLUMN v2.workspace_profile.role IS 'User role within the workspace (
 
 -- Create RLS policies for workspace_profile
 -- Users can view their own workspace memberships
+DROP POLICY IF EXISTS "Users can view their own workspace memberships" ON v2.workspace_profile;
 CREATE POLICY "Users can view their own workspace memberships"
 ON v2.workspace_profile
 FOR SELECT
@@ -44,6 +46,7 @@ USING (
 );
 
 -- Service role can manage all workspace profiles
+DROP POLICY IF EXISTS "Service role can manage all workspace profiles" ON v2.workspace_profile;
 CREATE POLICY "Service role can manage all workspace profiles"
 ON v2.workspace_profile
 FOR ALL
@@ -53,6 +56,7 @@ WITH CHECK (true);
 
 -- Create RLS policies for v2.workspace
 -- Users can view workspaces they are members of
+DROP POLICY IF EXISTS "Users can view their workspaces" ON v2.workspace;
 CREATE POLICY "Users can view their workspaces"
 ON v2.workspace
 FOR SELECT
@@ -64,6 +68,7 @@ USING (
 );
 
 -- Service role can manage all workspaces
+DROP POLICY IF EXISTS "Service role can manage all workspaces" ON v2.workspace;
 CREATE POLICY "Service role can manage all workspaces"
 ON v2.workspace
 FOR ALL

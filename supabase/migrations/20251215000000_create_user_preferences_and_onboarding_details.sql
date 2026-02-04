@@ -19,13 +19,14 @@ ALTER TABLE v2.onboarding ADD COLUMN IF NOT EXISTS onboarding_details jsonb DEFA
 ALTER TABLE v2.user_preferences ENABLE ROW LEVEL SECURITY;
 
 -- Add updated_at trigger for user_preferences
+DROP TRIGGER IF EXISTS update_user_preferences_updated_at ON v2.user_preferences;
 CREATE TRIGGER update_user_preferences_updated_at
   BEFORE UPDATE ON v2.user_preferences
   FOR EACH ROW
   EXECUTE FUNCTION v2.update_updated_at_column();
 
 -- RLS Policies for v2.user_preferences
-
+DROP POLICY IF EXISTS "Users can view their own preferences" ON v2.user_preferences;
 -- Users can view their own preferences
 CREATE POLICY "Users can view their own preferences"
 ON v2.user_preferences
@@ -33,6 +34,7 @@ FOR SELECT
 TO authenticated
 USING (profile_id = auth.uid());
 
+DROP POLICY IF EXISTS "Users can update their own preferences" ON v2.user_preferences;
 -- Users can update their own preferences
 CREATE POLICY "Users can update their own preferences"
 ON v2.user_preferences
@@ -41,6 +43,7 @@ TO authenticated
 USING (profile_id = auth.uid())
 WITH CHECK (profile_id = auth.uid());
 
+DROP POLICY IF EXISTS "Service role can manage all preferences" ON v2.user_preferences;
 -- Service role can manage all preferences
 CREATE POLICY "Service role can manage all preferences"
 ON v2.user_preferences

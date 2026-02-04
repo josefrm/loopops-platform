@@ -27,5 +27,5 @@ $$;
 -- Grant execute permission to authenticated roles
 GRANT EXECUTE ON FUNCTION public.get_agno_sessions(UUID, TEXT, TEXT, UUID) TO authenticated, anon, service_role;
 
--- Add comment
-COMMENT ON FUNCTION public.get_agno_sessions IS 'Queries ai.agno_sessions table explicitly with filters for user_id, workspace_id, project_id, and component_id';
+-- Add comment (signature required when multiple overloads exist)
+COMMENT ON FUNCTION public.get_agno_sessions(UUID, TEXT, TEXT, UUID) IS 'Queries ai.agno_sessions table explicitly with filters for user_id, workspace_id, project_id, and component_id';

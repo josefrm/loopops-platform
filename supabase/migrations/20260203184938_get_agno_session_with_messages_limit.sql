@@ -139,6 +139,6 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION public.get_agno_sessions IS 'Returns paginated sessions with internal message pagination (msg_page 1 = most recent messages)';
+COMMENT ON FUNCTION public.get_agno_sessions(TEXT, TEXT, TEXT, TEXT, INTEGER, INTEGER, INTEGER, INTEGER) IS 'Returns paginated sessions with internal message pagination (msg_page 1 = most recent messages)';
 
 COMMIT;

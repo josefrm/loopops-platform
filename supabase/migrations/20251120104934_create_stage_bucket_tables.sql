@@ -40,6 +40,7 @@ ALTER TABLE loopops.stage_buckets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE loopops.stage_files ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for stage_buckets
+DROP POLICY IF EXISTS "Users can view stage buckets for accessible projects" ON loopops.stage_buckets;
 -- Users can view stage buckets for projects they have access to
 CREATE POLICY "Users can view stage buckets for accessible projects"
 ON loopops.stage_buckets
@@ -55,6 +56,7 @@ USING (
     )
 );
 
+DROP POLICY IF EXISTS "Service role can manage all stage buckets" ON loopops.stage_buckets;
 -- Service role can manage all stage buckets
 CREATE POLICY "Service role can manage all stage buckets"
 ON loopops.stage_buckets
@@ -64,6 +66,7 @@ USING (true)
 WITH CHECK (true);
 
 -- RLS Policies for stage_files
+DROP POLICY IF EXISTS "Users can view files in accessible stage buckets" ON loopops.stage_files;
 -- Users can view files in stage buckets for accessible projects
 CREATE POLICY "Users can view files in accessible stage buckets"
 ON loopops.stage_files
@@ -80,6 +83,7 @@ USING (
     )
 );
 
+DROP POLICY IF EXISTS "Service role can manage all stage files" ON loopops.stage_files;
 -- Service role can manage all stage files
 CREATE POLICY "Service role can manage all stage files"
 ON loopops.stage_files

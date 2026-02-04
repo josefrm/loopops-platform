@@ -46,6 +46,7 @@ ALTER TABLE loopops.mindspace_files ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for mindspace_buckets
 -- Users can view their own mindspace buckets
+DROP POLICY IF EXISTS "Users can view their own mindspace buckets" ON loopops.mindspace_buckets;
 CREATE POLICY "Users can view their own mindspace buckets"
 ON loopops.mindspace_buckets
 FOR SELECT
@@ -53,6 +54,7 @@ TO authenticated
 USING (user_id = auth.uid());
 
 -- Service role can manage all mindspace buckets
+DROP POLICY IF EXISTS "Service role can manage all mindspace buckets" ON loopops.mindspace_buckets;
 CREATE POLICY "Service role can manage all mindspace buckets"
 ON loopops.mindspace_buckets
 FOR ALL
@@ -62,6 +64,7 @@ WITH CHECK (true);
 
 -- RLS Policies for mindspace_files
 -- Users can view files in their own mindspace buckets
+DROP POLICY IF EXISTS "Users can view files in their own mindspace buckets" ON loopops.mindspace_files;
 CREATE POLICY "Users can view files in their own mindspace buckets"
 ON loopops.mindspace_files
 FOR SELECT
@@ -73,6 +76,7 @@ USING (
 );
 
 -- Service role can manage all mindspace files
+DROP POLICY IF EXISTS "Service role can manage all mindspace files" ON loopops.mindspace_files;
 CREATE POLICY "Service role can manage all mindspace files"
 ON loopops.mindspace_files
 FOR ALL

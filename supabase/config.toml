@@ -67,6 +67,8 @@ enable_confirmations = false
 
 [auth.external.google]
 enabled = true
+client_id = "env(GOOGLE_CLIENT_ID)"
+secret = "env(GOOGLE_CLIENT_SECRET)"
 
 [functions.update-profile-v2]
 verify_jwt = false
