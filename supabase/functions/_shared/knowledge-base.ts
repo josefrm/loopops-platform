@@ -35,8 +35,11 @@ export interface ProcessDocumentResponse {
   bucket_name: string;
 }
 
-const B2B_API_BASE_URL =
-  'https://loopops-282035616357.northamerica-south1.run.app';
+const B2B_API_BASE_URL = Deno.env.get('VITE_BACKEND_API_URL') || '';
+
+if (!B2B_API_BASE_URL && Deno.env.get('NODE_ENV') !== 'test') {
+  console.warn('Warning: VITE_BACKEND_API_URL is not set in environment variables');
+}
 
 /**
  * Call external API to extract metadata (summary, tags, category) from a document
