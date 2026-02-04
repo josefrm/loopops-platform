@@ -1,7 +1,7 @@
 {
   "name": "vite_react_shadcn_ts",
   "private": true,
-  "version": "1.1.0-build.27",
+  "version": "1.1.0-build.28",
   "type": "module",
   "scripts": {
     "dev": "cp version.json public/ && vite",
