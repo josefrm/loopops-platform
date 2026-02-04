@@ -18,9 +18,8 @@ import { queryClient } from '@/lib/queryClient';
 import { useCreateOrGetSession } from '@/queries/sessionNavigationQueries';
 import {
   useCreateProjectMutation,
-  useProjectsQuery,
   useStagesQuery,
-  useWorkspacesQuery,
+  useWorkspaceProjectsQuery,
 } from '@/queries/workspaceProjectQueries';
 import {
   useStages,
@@ -89,13 +88,12 @@ const LoopsHistory = () => {
   );
 
   // Use React Query for data fetching (auto-syncs with store)
-  const { isLoading: workspacesLoading } = useWorkspacesQuery();
+  const { isLoading: workspacesLoading } = useWorkspaceProjectsQuery();
 
   // Get the first stage for LoopsTabContent (it needs a stage)
   const activeStage = stages.length > 0 ? stages[0] : null;
 
   // Data fetching
-  useProjectsQuery();
   useStagesQuery();
   const availableProjects = useAvailableProjects();
   const isLoadingProjects = useProjectLoading();

@@ -1,4 +1,4 @@
-import { useProjectsQuery } from '@/queries/workspaceProjectQueries';
+import { useWorkspaceProjectsQuery } from '@/queries/workspaceProjectQueries';
 import { useWorkspaceProjectStore } from '@/stores/workspaceProjectStore';
 
 interface UseProjectsOptions {
@@ -23,16 +23,10 @@ export const useProjects = (
   const { autoSelectFirst = false, onProjectSelected } = options;
 
   // Use the React Query hook which auto-syncs with the store
-  const query = useProjectsQuery();
+  const query = useWorkspaceProjectsQuery();
 
   // Get state from store
   const projects = useWorkspaceProjectStore((state) => state.projects);
-  const projectsLoading = useWorkspaceProjectStore(
-    (state) => state.projectsLoading,
-  );
-  const projectsError = useWorkspaceProjectStore(
-    (state) => state.projectsError,
-  );
   const setCurrentProjectId = useWorkspaceProjectStore(
     (state) => state.setCurrentProjectId,
   );
@@ -41,7 +35,7 @@ export const useProjects = (
   );
 
   // Handle auto-select and callback
-  // This is handled inside useProjectsQuery now, but we keep the callback support
+  // This is handled inside the query logic now, but we keep the callback support
   if (
     autoSelectFirst &&
     projects.length > 0 &&
@@ -55,8 +49,8 @@ export const useProjects = (
 
   return {
     projects,
-    isLoading: projectsLoading || query.isLoading,
-    error: projectsError,
+    isLoading: query.isLoading,
+    error: query.error instanceof Error ? query.error.message : null,
     refetch: async () => {
       await query.refetch();
     },

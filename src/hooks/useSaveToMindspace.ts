@@ -1,5 +1,6 @@
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useWorkspaceProjectsQuery } from '@/queries/workspaceProjectQueries';
 import { useWorkspaceProjectStore } from '@/stores/workspaceProjectStore';
 import { useCallback, useState } from 'react';
 
@@ -25,9 +26,7 @@ export const useSaveToMindspace = () => {
   const currentWorkspaceId = useWorkspaceProjectStore(
     (state) => state.currentWorkspaceId,
   );
-  const workspacesLoading = useWorkspaceProjectStore(
-    (state) => state.workspacesLoading,
-  );
+  const { isLoading: workspacesLoading } = useWorkspaceProjectsQuery();
   const currentProjectId = useWorkspaceProjectStore(
     (state) => state.currentProjectId,
   );

@@ -58,7 +58,6 @@ const ProjectContextPage = () => {
 
   const stages = useStages();
   const [activeTab, setActiveTab] = useState<TabType>('artifacts');
-  const [isLoadingStages, setIsLoadingStages] = useState(false);
 
   const { user, preferencesLoaded } = useAuth();
   const { toast } = useToast();
@@ -361,11 +360,6 @@ const ProjectContextPage = () => {
   // Data fetching
   const { isLoading: stagesLoading } = useStagesQuery();
   const availableProjects = useAvailableProjects();
-
-  // Update stages loading state
-  useEffect(() => {
-    setIsLoadingStages(stagesLoading);
-  }, [stagesLoading]);
 
   // Mutation for creating new projects
   const createProjectMutation = useCreateProjectMutation();
@@ -771,7 +765,7 @@ const ProjectContextPage = () => {
 
             {/* Third Row: Category Navigation Tabs */}
             <div ref={tabNavigationRef} data-testid="project-context-tabs">
-              {isLoadingStages ? (
+              {stagesLoading ? (
                 <TabNavigationSkeleton />
               ) : (
                 <TabNavigationControl
@@ -781,7 +775,7 @@ const ProjectContextPage = () => {
               )}
             </div>
 
-            {isLoadingStages ? (
+            {stagesLoading ? (
               <div dangerouslySetInnerHTML={{ __html: '' }} />
             ) : (
               activeStage && (
@@ -838,7 +832,7 @@ const ProjectContextPage = () => {
 
           {/* Tab Content Section - Takes remaining height */}
           <div className="flex-1 min-h-0 !mt-loop-10">
-            {!isLoadingStages &&
+            {!stagesLoading &&
               (activeTab === 'assets' ? (
                 <AssetsTabDisplay
                   key={refreshKey}

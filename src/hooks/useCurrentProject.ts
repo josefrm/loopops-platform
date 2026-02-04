@@ -1,3 +1,4 @@
+import { useWorkspaceProjectsQuery } from '@/queries/workspaceProjectQueries';
 import {
   Project,
   useWorkspaceProjectStore,
@@ -20,7 +21,8 @@ export const useCurrentProject = (): Project | null => {
  * Hook to get project loading state
  */
 export const useProjectLoading = (): boolean => {
-  return useWorkspaceProjectStore((state) => state.projectsLoading);
+  const query = useWorkspaceProjectsQuery();
+  return query.isLoading;
 };
 
 /**
