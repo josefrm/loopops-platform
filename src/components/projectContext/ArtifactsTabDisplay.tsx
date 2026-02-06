@@ -21,6 +21,7 @@ interface ArtifactsTabDisplayProps {
     count: number,
     metadata: { id: string; title: string }[],
   ) => void;
+  onViewDocument?: (item: ProjectItem) => void;
 }
 
 interface ArtifactStageSectionProps {
@@ -29,6 +30,7 @@ interface ArtifactStageSectionProps {
   projectId: string;
   selectedItemIds: Set<string>;
   onToggleItem: (id: string, title: string, checked: boolean) => void;
+  onViewDocument?: (item: ProjectItem) => void;
 }
 
 const ArtifactStageSection: React.FC<ArtifactStageSectionProps> = ({
@@ -37,6 +39,7 @@ const ArtifactStageSection: React.FC<ArtifactStageSectionProps> = ({
   projectId,
   selectedItemIds,
   onToggleItem,
+  onViewDocument,
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -239,9 +242,13 @@ const ArtifactStageSection: React.FC<ArtifactStageSectionProps> = ({
               onToggleItem(item.id.toString(), item.title, checked)
             }
             onClick={() => {
-              const id = item.id.toString();
-              const isSelected = selectedItemIds.has(id);
-              onToggleItem(id, item.title, !isSelected);
+              if (onViewDocument) {
+                onViewDocument(item);
+              } else {
+                const id = item.id.toString();
+                const isSelected = selectedItemIds.has(id);
+                onToggleItem(id, item.title, !isSelected);
+              }
             }}
           />
         ))}
@@ -253,6 +260,7 @@ const ArtifactStageSection: React.FC<ArtifactStageSectionProps> = ({
 export const ArtifactsTabDisplay: React.FC<ArtifactsTabDisplayProps> = ({
   stages,
   onSelectedFilesChange,
+  onViewDocument,
 }) => {
   const currentWorkspaceId = useWorkspaceProjectStore(
     (state) => state.currentWorkspaceId,
@@ -306,7 +314,7 @@ export const ArtifactsTabDisplay: React.FC<ArtifactsTabDisplayProps> = ({
   }
 
   return (
-    <div className="h-full overflow-y-auto overflow-x-hidden scrollbar-hide pr-loop-2 pb-loop-8">
+    <div className="pr-loop-2 pb-loop-8">
       {stages.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full p-loop-8">
           <p className="text-neutral-grayscale-60">No stages found.</p>
@@ -320,6 +328,7 @@ export const ArtifactsTabDisplay: React.FC<ArtifactsTabDisplayProps> = ({
             projectId={currentProjectId}
             selectedItemIds={selectedItemIds}
             onToggleItem={handleToggleItem}
+            onViewDocument={onViewDocument}
           />
         ))
       )}

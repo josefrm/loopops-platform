@@ -1,6 +1,6 @@
 /**
  * Desktop Notification Utilities
- * 
+ *
  * Handles browser desktop notifications for run completion and other events.
  * Requires user permission and secure context (HTTPS or localhost).
  */
@@ -8,12 +8,14 @@
 /**
  * Request notification permission from the user
  * Must be called in response to a user gesture (click, etc.)
- * 
+ *
  * @returns Promise<boolean> - true if permission granted, false otherwise
  */
 export async function requestNotificationPermission(): Promise<boolean> {
   if (!('Notification' in window)) {
-    console.warn('[Notifications] This browser does not support desktop notifications');
+    console.warn(
+      '[Notifications] This browser does not support desktop notifications',
+    );
     return false;
   }
 
@@ -22,7 +24,9 @@ export async function requestNotificationPermission(): Promise<boolean> {
   }
 
   if (Notification.permission === 'denied') {
-    console.warn('[Notifications] Notification permission has been denied by user');
+    console.warn(
+      '[Notifications] Notification permission has been denied by user',
+    );
     return false;
   }
 
@@ -48,14 +52,14 @@ export function canShowNotifications(): boolean {
 
 /**
  * Show a desktop notification
- * 
+ *
  * @param title - Notification title
  * @param options - Optional notification options
  * @returns Notification object or null if not supported/permitted
  */
 export function showNotification(
   title: string,
-  options?: NotificationOptions
+  options?: NotificationOptions,
 ): Notification | null {
   if (!canShowNotifications()) {
     return null;
@@ -66,20 +70,29 @@ export function showNotification(
     // Browsers prefer square icons, ideally 192x192 or larger
     // Use the full logo for better visibility
     const origin = window.location.origin;
-    
+
     // Convert relative paths to absolute URLs, or use provided absolute URL
-    const normalizeIconUrl = (url: string | undefined, defaultPath: string): string => {
+    const normalizeIconUrl = (
+      url: string | undefined,
+      defaultPath: string,
+    ): string => {
       if (!url) return `${origin}${defaultPath}`;
       if (url.startsWith('http://') || url.startsWith('https://')) return url;
       if (url.startsWith('/')) return `${origin}${url}`;
       return `${origin}/${url}`;
     };
-    
-    const iconUrl = normalizeIconUrl(options?.icon, '/lovable-uploads/loopops_logo.png');
-    const badgeUrl = normalizeIconUrl(options?.badge, '/lovable-uploads/loop_ops_small.png');
-    
+
+    const iconUrl = normalizeIconUrl(
+      options?.icon,
+      '/loopops_icons/loopops_black.svg',
+    );
+    const badgeUrl = normalizeIconUrl(
+      options?.badge,
+      '/loopops_icons/loopops_black.svg',
+    );
+
     console.log('[Notifications] Creating notification with icon:', iconUrl);
-    
+
     const notification = new Notification(title, {
       requireInteraction: false,
       silent: false,
@@ -105,7 +118,7 @@ export function showNotification(
 /**
  * Show a notification when a run completes
  * Only shows if the tab is not visible (user is away)
- * 
+ *
  * @param sessionId - Session ID for the completed run
  * @param message - Optional custom message
  * @param onClick - Optional callback when notification is clicked
@@ -113,22 +126,29 @@ export function showNotification(
 export function showRunCompleteNotification(
   sessionId: string,
   message?: string,
-  onClick?: () => void
+  onClick?: () => void,
 ): Notification | null {
   // Check notification support and permission
   if (!canShowNotifications()) {
-    console.log('[Notifications] Cannot show notification - permission not granted or not supported');
+    console.log(
+      '[Notifications] Cannot show notification - permission not granted or not supported',
+    );
     return null;
   }
 
   // Only show notification if tab is hidden (user is away)
   // If tab is visible, user can see the completion in the UI
   if (!document.hidden) {
-    console.log('[Notifications] Tab is visible - notification skipped (user can see completion in UI)');
+    console.log(
+      '[Notifications] Tab is visible - notification skipped (user can see completion in UI)',
+    );
     return null;
   }
 
-  console.log('[Notifications] Showing run complete notification for session:', sessionId);
+  console.log(
+    '[Notifications] Showing run complete notification for session:',
+    sessionId,
+  );
 
   const notification = showNotification('Run Completed', {
     body: message || 'Your agent run has finished processing.',
@@ -158,7 +178,7 @@ export function showRunCompleteNotification(
  */
 export function showRunStartedNotification(
   sessionId: string,
-  message?: string
+  message?: string,
 ): Notification | null {
   if (!canShowNotifications()) {
     return null;
@@ -174,4 +194,3 @@ export function showRunStartedNotification(
     },
   });
 }
-

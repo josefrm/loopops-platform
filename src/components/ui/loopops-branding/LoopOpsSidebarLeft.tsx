@@ -67,16 +67,6 @@ export const LoopOpsSidebarLeft = forwardRef<
     );
   };
 
-  const handleKnowledgeBaseClick = () => {
-    if (isAnimating) return;
-
-    triggerCurtain(
-      'left-to-right',
-      () => navigate('/integrations?tab=knowledge-base'),
-      () => {},
-    );
-  };
-
   const { width, setWidth } = useSidebarResize({
     side: 'left',
     minWidth: 80,
@@ -218,10 +208,6 @@ export const LoopOpsSidebarLeft = forwardRef<
               onClick={() => {}}
               disabled={isAnimating}
               dropdownOptions={[
-                {
-                  name: 'Knowledge Base',
-                  action: handleKnowledgeBaseClick,
-                },
                 {
                   name: 'Integrations',
                   action: handleIntegrationsClick,

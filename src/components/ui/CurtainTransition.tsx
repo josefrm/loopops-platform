@@ -100,7 +100,7 @@ export const CurtainTransition: React.FC<CurtainTransitionProps> = ({
         {/* Curtain content - Logo or loading indicator */}
         <div className="flex flex-col items-center gap-4">
           <img
-            src="/lovable-uploads/loop_ops_small.png"
+            src="/images/loopops_icons/loopops_black.svg"
             alt="LoopOps"
             className={cn('w-16 h-16 object-contain', 'animate-pulse')}
           />

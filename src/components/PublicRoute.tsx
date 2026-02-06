@@ -20,7 +20,7 @@ export const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
       <div className="min-h-screen bg-workspace-gradient flex items-center justify-center">
         <div className="text-center animate-pulse">
           <img
-            src="/lovable-uploads/loopops_logo.png"
+            src="/images/loopops_icons/loopops_black.svg"
             alt="LoopOps"
             className="h-loop-8 w-auto"
           />

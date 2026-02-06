@@ -1,8 +1,8 @@
-import React from 'react';
-import { useLocation, Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ControlIcon, ControlIconType } from '../ui/ControlIcon';
 import { HouseIcon } from 'lucide-react';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { ControlIcon, ControlIconType } from '../ui/ControlIcon';
 
 interface LoopOpsSidebarProps {
   className?: string;
@@ -49,7 +49,7 @@ export const LoopOpsSidebar: React.FC<LoopOpsSidebarProps> = ({
           className="transition-opacity hover:opacity-80 cursor-pointer"
         >
           <img
-            src="/lovable-uploads/loop_ops_small.png"
+            src="/images/loopops_icons/loopops_black.svg"
             alt="LoopOps"
             width={32}
             height={32}

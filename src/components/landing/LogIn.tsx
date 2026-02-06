@@ -1,7 +1,7 @@
-import { Checkbox } from '@/components/ui/checkbox';
 import { ControlButton } from '@/components/ui/ControlButton';
-import { Input } from '@/components/ui/input';
 import { SocialSignInButton } from '@/components/ui/SocialSignInButton';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Eye, EyeClosed, LockKeyholeOpen, UserPlus } from 'lucide-react';
@@ -38,24 +38,24 @@ export const LogIn: React.FC = () => {
 
   const handleInputChange =
     (field: keyof LogInFormData) =>
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value =
-          e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-        setFormData({ ...formData, [field]: value });
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value =
+        e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+      setFormData({ ...formData, [field]: value });
 
-        // Validate the specific field and clear error if it becomes valid
-        try {
-          if (field === 'email') {
-            z.string().email().parse(value);
-            setErrors((prev) => ({ ...prev, email: undefined }));
-          } else if (field === 'password') {
-            z.string().min(1).parse(value);
-            setErrors((prev) => ({ ...prev, password: undefined }));
-          }
-        } catch {
-          // Field is still invalid, keep the error
+      // Validate the specific field and clear error if it becomes valid
+      try {
+        if (field === 'email') {
+          z.string().email().parse(value);
+          setErrors((prev) => ({ ...prev, email: undefined }));
+        } else if (field === 'password') {
+          z.string().min(1).parse(value);
+          setErrors((prev) => ({ ...prev, password: undefined }));
         }
-      };
+      } catch {
+        // Field is still invalid, keep the error
+      }
+    };
 
   const validateForm = () => {
     try {
@@ -171,25 +171,26 @@ export const LogIn: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-workspace-gradient flex items-center justify-center p-loop-8">
-      <div className="flex flex-col items-center justify-center text-center space-y-loop-8">
-        {/* Logo */}
-        <div className="flex items-center justify-center">
-          <img
-            src="/lovable-uploads/landing_loopops_logo.png"
-            alt="Loop Ops Logo"
-            className="max-w-[170px] h-auto"
-          />
-        </div>
-
+    <div
+      className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-loop-8"
+      style={{ backgroundImage: "url('/images/background/cover03.jpg')" }}
+    >
+      <div className="flex flex-col items-center justify-center text-center space-y-loop-8 w-full max-w-[800px]">
         {/* Welcome Message */}
-        <div className="space-y-loop-10 rounded-md bg-neutral-grayscale-0 p-loop-12 shadow-lg w-[700px]">
-          <div className="flex">
-            <h1 className="text-lg font-bold">Login</h1>
+        <div className="space-y-loop-10 rounded-3xl bg-white/70 backdrop-blur-md p-loop-12 shadow-2xl w-full">
+          <div className="flex space-x-loop-4">
+            <img
+              src="/images/loopops_icons/loopops_black.svg"
+              alt="Loop Ops Logo"
+              className="max-w-[50px] h-auto drop-shadow-sm"
+            />
+            <h1 className="text-2xl font-bold text-neutral-grayscale-90">
+              Login
+            </h1>
           </div>
 
           {/* Two columns layout with margin top */}
-          <div className="mt-loop-8 flex">
+          <div className="mt-loop-8 flex gap-loop-8">
             {/* First column - 50% width */}
             <div className="w-1/2">
               <form onSubmit={handleSubmit} className="space-y-loop-6">
@@ -202,7 +203,9 @@ export const LogIn: React.FC = () => {
                       value={formData.email}
                       onChange={handleInputChange('email')}
                       className={
-                        errors.email ? 'border-system-error-50' : 'h-loop-10'
+                        errors.email
+                          ? 'border-system-error-50 placeholder:text-neutral-grayscale-40'
+                          : 'h-loop-10 placeholder:text-neutral-grayscale-40'
                       }
                       placeholder="Email"
                     />
@@ -223,8 +226,8 @@ export const LogIn: React.FC = () => {
                         onChange={handleInputChange('password')}
                         className={
                           errors.password
-                            ? 'border-system-error-50 pr-loop-10'
-                            : 'h-loop-10 pr-loop-10'
+                            ? 'border-system-error-50 pr-loop-10 bg-white/10 border-white/20 text-white placeholder:text-neutral-grayscale-40'
+                            : 'h-loop-10 pr-loop-10 placeholder:text-neutral-grayscale-40'
                         }
                         placeholder="Password"
                       />
@@ -232,7 +235,7 @@ export const LogIn: React.FC = () => {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         tabIndex={-1}
-                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-40 hover:text-neutral-grayscale-60 transition-colors"
+                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-40 hover:text-neutral-grayscale-90 transition-colors"
                       >
                         {showPassword ? (
                           <Eye size={16} />
@@ -261,11 +264,11 @@ export const LogIn: React.FC = () => {
                           keepSignedIn: checked as boolean,
                         }))
                       }
-                      className="h-loop-6 w-loop-6 rounded-full data-[state=checked]:bg-system-success-50 data-[state=checked]:border-system-success-50"
+                      className="h-loop-6 w-loop-6 rounded-full border-neutral-grayscale-80 data-[state=checked]:bg-brand-accent-50 data-[state=checked]:border-brand-accent-50 text-white"
                     />
                     <label
                       htmlFor="keepSignedIn"
-                      className="text-sm text-neutral-grayscale-90"
+                      className="text-sm text-neutral-grayscale-90 cursor-pointer"
                     >
                       Keep me signed in
                     </label>
@@ -284,9 +287,11 @@ export const LogIn: React.FC = () => {
 
                 <ActionableText
                   text="Forgot your password?"
-                  onClick={() => navigate('/recover-password', { replace: true })}
+                  onClick={() =>
+                    navigate('/recover-password', { replace: true })
+                  }
                   icon={LockKeyholeOpen}
-                  textClassName="text-brand-accent-50 text-sm"
+                  textClassName="text-brand-accent-50 hover:text-brand-accent-50 transition-colors text-sm"
                   iconClassName="text-brand-accent-50"
                 />
 
@@ -294,18 +299,18 @@ export const LogIn: React.FC = () => {
                   text="New to LoopOps? Create an account."
                   onClick={() => navigate('/signup')}
                   icon={UserPlus}
-                  textClassName="text-brand-accent-50 text-sm"
+                  textClassName="text-brand-accent-50 hover:text-brand-accent-50 transition-colors text-sm"
                   iconClassName="text-brand-accent-50"
                 />
               </form>
             </div>
 
             {/* Vertical separator line */}
-            <div className="w-px bg-neutral-grayscale-30 mx-loop-12"></div>
+            <div className="w-px bg-neutral-grayscale-80 mx-loop-12"></div>
 
             {/* Second column - 50% width (empty for now) */}
             <div className="w-1/2 space-y-loop-6">
-              <h1 className="text-lg font-bold">Or</h1>
+              <h1 className="text-lg font-boldr">Or</h1>
               <div className="space-y-loop-4">
                 <SocialSignInButton
                   provider="google"

@@ -189,7 +189,10 @@ export const ArtifactItemContent: React.FC<ArtifactItemContentProps> = ({
     >
       <div className="flex items-start justify-between w-full relative overflow-hidden">
         {/* 1st Column: Leading Content (Checkbox) */}
-        <div className="flex items-center justify-center flex-shrink-0 self-center">
+        <div
+          className="flex items-center justify-center flex-shrink-0 self-center"
+          onClick={(e) => e.stopPropagation()}
+        >
           <Checkbox
             checked={isActive}
             onCheckedChange={(checked) => onCheckedChange?.(checked as boolean)}
