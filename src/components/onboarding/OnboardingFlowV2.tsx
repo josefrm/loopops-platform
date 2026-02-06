@@ -376,7 +376,7 @@ export const OnboardingFlowV2: React.FC = () => {
         className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-loop-8"
         style={{ backgroundImage: "url('/images/background/cover02.png')" }}
       >
-        <div className="w-[1120px] h-[644px] rounded-md shadow-lg overflow-hidden flex">
+        <div className="w-[1120px] h-[644px] rounded-custom shadow-lg overflow-hidden flex">
           {/* Left Panel - Setup Status */}
           <div className="w-1/2 bg-neutral-grayscale-0 p-loop-14 space-y-loop-10 flex flex-col justify-center">
             <div className="space-y-loop-8 px-loop-14">
@@ -696,7 +696,7 @@ export const OnboardingFlowV2: React.FC = () => {
       className="min-h-screen w-full bg-cover bg-center flex flex-col items-center justify-center p-loop-8 space-y-loop-8"
       style={{ backgroundImage: "url('/images/background/cover02.png')" }}
     >
-      <div className="w-[1120px] h-[644px] rounded-md shadow-lg overflow-hidden flex">
+      <div className="w-[1120px] h-[644px] rounded-custom shadow-lg overflow-hidden flex">
         {/* Left Panel - Form */}
         <div className="w-1/2 bg-neutral-grayscale-0 p-loop-14 space-y-loop-10">
           {/* Progress Indicators */}

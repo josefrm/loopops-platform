@@ -87,7 +87,7 @@ export const CustomSelectFilter: React.FC<CustomSelectFilterProps> = ({
       <SelectContent
         showDividers={false}
         className={cn(
-          `cursor-pointer max-h-[300px] w-[var(--radix-select-trigger-width)] min-w-0 p-loop-4 rounded-md border ${contentStyles}`,
+          `cursor-pointer max-h-[300px] w-[var(--radix-select-trigger-width)] min-w-0 p-loop-2 rounded-md border ${contentStyles}`,
         )}
         onCloseAutoFocus={(e) => {
           if (keepOpen) {
@@ -119,7 +119,7 @@ export const CustomSelectFilter: React.FC<CustomSelectFilterProps> = ({
             value={property.key}
             className={cn(`cursor-pointer`, itemStyles)}
           >
-            <div className="flex items-center space-x-2 w-full">
+            <div className="flex items-center space-x-2 w-full text-base">
               <span className="truncate" title={property.description}>
                 {property.name}
               </span>

@@ -24,7 +24,7 @@ export const OnboardingV2: React.FC = () => {
       style={{ backgroundImage: "url('/images/background/cover02.png')" }}
     >
       {/* Main Content */}
-      <div className="space-y-loop-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-[70px] shadow-2xl max-w-[1200px]">
+      <div className="space-y-loop-14 rounded-custom bg-white/70 backdrop-blur-md border border-white/20 p-[70px] shadow-2xl max-w-[1200px]">
         <div className="flex flex-col space-y-loop-2 align-items-left">
           <img
             src="/images/loopops_icons/loopops_black.svg"

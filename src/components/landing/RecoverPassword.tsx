@@ -87,22 +87,24 @@ export const RecoverPassword: React.FC = () => {
       >
         <div className="flex flex-col items-center justify-center text-center space-y-loop-8">
           {/* Success Message */}
-          <div className="space-y-loop-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-loop-12 shadow-2xl w-[500px]">
+          <div className="space-y-loop-10 rounded-custom bg-white/70 backdrop-blur-md p-loop-12 shadow-2xl w-[500px]">
             <div className="space-y-loop-6">
               <div className="flex space-x-loop-4">
                 <img
-                  src="/images/loopops_icons/loopops_mask.svg"
+                  src="/images/loopops_icons/loopops_black.svg"
                   alt="Loop Ops Logo"
                   className="max-w-[50px] h-auto drop-shadow-sm"
                 />
                 <Mail className="h-loop-16 w-loop-16 text-system-success-50" />
               </div>
-              <h1 className="text-lg font-bold text-white">Check your email</h1>
-              <p className="text-sm text-neutral-grayscale-20">
+              <h1 className="text-lg font-bold text-neutral-grayscale-90">
+                Check your email
+              </h1>
+              <p className="text-sm text-neutral-grayscale-90">
                 We've sent a password recovery link to{' '}
                 <strong>{formData.email}</strong>
               </p>
-              <p className="text-sm text-neutral-grayscale-40">
+              <p className="text-sm text-neutral-grayscale-90">
                 Didn't receive the email? Check your spam folder or try again.
               </p>
             </div>
@@ -113,14 +115,14 @@ export const RecoverPassword: React.FC = () => {
                 type="transparent"
                 size="lg"
                 onClick={() => setIsSubmitted(false)}
-                className="!w-full h-loop-10 bg-white/10 hover:bg-white/20 text-white border-white/20"
+                className="!w-full h-loop-10 text-neutral-grayscale-90 border-neutral-grayscale-20 hover:bg-neutral-grayscale-10"
               />
 
               <ActionableText
                 text="Back to login"
                 onClick={handleBackToLogin}
                 icon={ArrowLeft}
-                textClassName="text-white hover:text-brand-accent-50 transition-colors text-sm"
+                textClassName="text-brand-accent-50 hover:text-brand-accent-50 transition-colors text-sm"
                 iconClassName="text-brand-accent-50"
               />
             </div>
@@ -137,17 +139,19 @@ export const RecoverPassword: React.FC = () => {
     >
       <div className="flex flex-col items-center justify-center text-center space-y-loop-8">
         {/* Recover Password Form */}
-        <div className="space-y-loop-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-loop-12 shadow-2xl w-[500px]">
+        <div className="space-y-loop-10 rounded-3xl bg-white/70 backdrop-blur-md p-loop-12 shadow-2xl w-[500px]">
           <div className="space-y-loop-4">
             <div className="flex space-x-loop-4">
               <img
-                src="/images/loopops_icons/loopops_mask.svg"
+                src="/images/loopops_icons/loopops_black.svg"
                 alt="Loop Ops Logo"
                 className="max-w-[50px] h-auto drop-shadow-sm"
               />
-              <h1 className="text-lg font-bold text-white">Recover Password</h1>
+              <h1 className="text-lg font-bold text-neutral-grayscale-90">
+                Recover Password
+              </h1>
             </div>
-            <p className="text-sm text-neutral-grayscale-20">
+            <p className="text-sm text-neutral-grayscale-90">
               Enter your email address and we'll send you a link to reset your
               password.
             </p>
@@ -164,8 +168,8 @@ export const RecoverPassword: React.FC = () => {
                   onChange={handleInputChange('email')}
                   className={
                     errors.email
-                      ? 'border-system-error-50 bg-white/10 border-white/20 text-white placeholder:text-neutral-grayscale-40'
-                      : 'h-loop-10 bg-white/10 border-white/20 text-white placeholder:text-neutral-grayscale-40 focus:border-white/50 focus:bg-white/20'
+                      ? 'border-system-error-50 placeholder:text-neutral-grayscale-90'
+                      : 'h-loop-10 placeholder:text-neutral-grayscale-90'
                   }
                   placeholder="Enter your email address"
                 />
@@ -190,7 +194,7 @@ export const RecoverPassword: React.FC = () => {
               text="Back to login"
               onClick={handleBackToLogin}
               icon={ArrowLeft}
-              textClassName="text-white hover:text-brand-accent-50 transition-colors text-sm"
+              textClassName="text-brand-accent-50 hover:text-brand-accent-50 transition-colors text-sm"
               iconClassName="text-brand-accent-50"
             />
           </form>

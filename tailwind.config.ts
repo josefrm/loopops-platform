@@ -212,6 +212,7 @@ export default {
         md: 'var(--radius-md)', // 24px
         lg: 'var(--radius-lg)', // 32px
         full: 'var(--radius-full)', // 999px
+        custom: '50px',
       },
       fontSize: {
         xs: 'var(--font-size-xs)', // (8px) - tiny labels, badges

@@ -169,14 +169,14 @@ export const SignUp: React.FC = () => {
     >
       <div className="flex flex-col items-center justify-center text-center space-y-loop-8 w-full max-w-[800px]">
         {/* Welcome Message */}
-        <div className="space-y-loop-10 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-loop-12 shadow-2xl w-full">
+        <div className="space-y-loop-10 rounded-custom bg-white/70 backdrop-blur-md p-loop-12 shadow-2xl w-full">
           <div className="flex space-x-loop-4">
             <img
-              src="/images/loopops_icons/loopops_mask.svg"
+              src="/images/loopops_icons/loopops_black.svg"
               alt="Loop Ops Logo"
               className="max-w-[50px] h-auto drop-shadow-sm"
             />
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-neutral-grayscale-90">
               Sign up to LoopOps
             </h1>
           </div>
@@ -196,8 +196,8 @@ export const SignUp: React.FC = () => {
                       onChange={handleInputChange('email')}
                       className={
                         errors.email
-                          ? 'border-system-error-50 bg-white/10 border-white/20 text-white placeholder:text-neutral-grayscale-40'
-                          : 'h-loop-10 bg-white/10 border-white/20 text-white placeholder:text-neutral-grayscale-40 focus:border-white/50 focus:bg-white/20'
+                          ? 'border-system-error-50 placeholder:text-neutral-grayscale-90'
+                          : 'h-loop-10 placeholder:text-neutral-grayscale-90'
                       }
                       placeholder="Email"
                     />
@@ -217,8 +217,8 @@ export const SignUp: React.FC = () => {
                         onChange={handleInputChange('password')}
                         className={
                           errors.password
-                            ? 'border-system-error-50 pr-loop-10 bg-white/10 border-white/20 text-white placeholder:text-neutral-grayscale-40'
-                            : 'h-loop-10 pr-loop-10 bg-white/10 border-white/20 text-white placeholder:text-neutral-grayscale-40 focus:border-white/50 focus:bg-white/20'
+                            ? 'border-system-error-50 pr-loop-10 placeholder:text-neutral-grayscale-90'
+                            : 'h-loop-10 pr-loop-10 placeholder:text-neutral-grayscale-90'
                         }
                         placeholder="Password"
                       />
@@ -226,7 +226,7 @@ export const SignUp: React.FC = () => {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         tabIndex={-1}
-                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-40 hover:text-white transition-colors"
+                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-90 hover:text-neutral-grayscale-90 transition-colors"
                       >
                         {showPassword ? (
                           <Eye size={16} />
@@ -251,8 +251,8 @@ export const SignUp: React.FC = () => {
                         onChange={handleInputChange('confirmPassword')}
                         className={
                           errors.confirmPassword
-                            ? 'border-system-error-50 pr-loop-10 bg-white/10 border-white/20 text-white placeholder:text-neutral-grayscale-40'
-                            : 'h-loop-10 pr-loop-10 bg-white/10 border-white/20 text-white placeholder:text-neutral-grayscale-40 focus:border-white/50 focus:bg-white/20'
+                            ? 'border-system-error-50 pr-loop-10 placeholder:text-neutral-grayscale-90'
+                            : 'h-loop-10 pr-loop-10 placeholder:text-neutral-grayscale-90'
                         }
                         placeholder="Confirm Password"
                       />
@@ -262,7 +262,7 @@ export const SignUp: React.FC = () => {
                           setShowConfirmPassword(!showConfirmPassword)
                         }
                         tabIndex={-1}
-                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-40 hover:text-white transition-colors"
+                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-90 hover:text-neutral-grayscale-90 transition-colors"
                       >
                         {showConfirmPassword ? (
                           <Eye size={16} />
@@ -291,11 +291,11 @@ export const SignUp: React.FC = () => {
                           keepSignedIn: checked as boolean,
                         }))
                       }
-                      className="h-loop-6 w-loop-6 rounded-full border-white/40 data-[state=checked]:bg-brand-accent-50 data-[state=checked]:border-brand-accent-50 text-white"
+                      className="h-loop-6 w-loop-6 rounded-full border-neutral-grayscale-80 data-[state=checked]:bg-brand-accent-50 data-[state=checked]:border-brand-accent-50 text-white"
                     />
                     <label
                       htmlFor="keepSignedIn"
-                      className="text-sm text-neutral-grayscale-20"
+                      className="text-sm text-neutral-grayscale-90"
                     >
                       Keep me signed in
                     </label>
@@ -320,11 +320,11 @@ export const SignUp: React.FC = () => {
                             }));
                           }
                         }}
-                        className="h-loop-6 w-loop-6 rounded-full border-white/40 data-[state=checked]:bg-brand-accent-50 data-[state=checked]:border-brand-accent-50 text-white"
+                        className="h-loop-6 w-loop-6 rounded-full border-neutral-grayscale-80 data-[state=checked]:bg-brand-accent-50 data-[state=checked]:border-brand-accent-50 text-white"
                       />
                       <label
                         htmlFor="agreeTerms"
-                        className="text-sm text-neutral-grayscale-20 cursor-pointer"
+                        className="text-sm text-neutral-grayscale-90 cursor-pointer"
                       >
                         I agree to the terms and conditions
                       </label>
@@ -351,18 +351,18 @@ export const SignUp: React.FC = () => {
                   text="Already have an account? Sign in"
                   onClick={handleSignInClick}
                   icon={LogIn}
-                  textClassName="text-white hover:text-brand-accent-50 transition-colors text-sm"
+                  textClassName="text-brand-accent-50 hover:text-brand-accent-50 transition-colors text-sm"
                   iconClassName="text-brand-accent-50"
                 />
               </form>
             </div>
 
             {/* Vertical separator line */}
-            <div className="w-px bg-white/20 mx-loop-12"></div>
+            <div className="w-px bg-neutral-grayscale-80 mx-loop-12"></div>
 
             {/* Second column - 50% width (empty for now) */}
             <div className="w-1/2 space-y-loop-6">
-              <h1 className="text-lg font-bold text-white">Or</h1>
+              <h1 className="text-lg font-boldr">Or</h1>
               <div className="space-y-loop-4">
                 <SocialSignInButton
                   provider="google"

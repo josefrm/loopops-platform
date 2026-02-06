@@ -177,7 +177,7 @@ export const LogIn: React.FC = () => {
     >
       <div className="flex flex-col items-center justify-center text-center space-y-loop-8 w-full max-w-[800px]">
         {/* Welcome Message */}
-        <div className="space-y-loop-10 rounded-3xl bg-white/70 backdrop-blur-md p-loop-12 shadow-2xl w-full">
+        <div className="space-y-loop-10 rounded-custom bg-white/70 backdrop-blur-md p-loop-12 shadow-2xl w-full">
           <div className="flex space-x-loop-4">
             <img
               src="/images/loopops_icons/loopops_black.svg"
@@ -204,8 +204,8 @@ export const LogIn: React.FC = () => {
                       onChange={handleInputChange('email')}
                       className={
                         errors.email
-                          ? 'border-system-error-50 placeholder:text-neutral-grayscale-40'
-                          : 'h-loop-10 placeholder:text-neutral-grayscale-40'
+                          ? 'border-system-error-50 placeholder:text-neutral-grayscale-90'
+                          : 'h-loop-10 placeholder:text-neutral-grayscale-90'
                       }
                       placeholder="Email"
                     />
@@ -226,8 +226,8 @@ export const LogIn: React.FC = () => {
                         onChange={handleInputChange('password')}
                         className={
                           errors.password
-                            ? 'border-system-error-50 pr-loop-10 bg-white/10 border-white/20 text-white placeholder:text-neutral-grayscale-40'
-                            : 'h-loop-10 pr-loop-10 placeholder:text-neutral-grayscale-40'
+                            ? 'border-system-error-50 pr-loop-10 placeholder:text-neutral-grayscale-90'
+                            : 'h-loop-10 pr-loop-10 placeholder:text-neutral-grayscale-90'
                         }
                         placeholder="Password"
                       />
@@ -235,7 +235,7 @@ export const LogIn: React.FC = () => {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         tabIndex={-1}
-                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-40 hover:text-neutral-grayscale-90 transition-colors"
+                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-90 hover:text-neutral-grayscale-90 transition-colors"
                       >
                         {showPassword ? (
                           <Eye size={16} />
