@@ -130,7 +130,7 @@ export const UserMenu: React.FC = () => {
               </span>
             </div>
             <img
-              src="/lovable-uploads/user-icon.png"
+              src="/images/user-icon.png"
               alt="User"
               className="w-loop-10 h-loop-10 rounded-full object-cover"
             />

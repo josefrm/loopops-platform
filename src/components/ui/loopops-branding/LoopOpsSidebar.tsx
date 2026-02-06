@@ -136,7 +136,7 @@ export const LoopOpsSidebar = React.forwardRef<
           className="transition-opacity hover:opacity-80 cursor-pointer bg-transparent border-none p-loop-3 -m-loop-3"
         >
           <img
-            src="/lovable-uploads/loop_ops_small.png"
+            src="/images/loopops_icons/loopops_black.svg"
             alt="LoopOps"
             width={32}
             height={32}

@@ -1,3 +1,4 @@
+import { DocumentViewer } from '@/components/chat/DocumentViewer';
 import { ControlButton } from '@/components/ui/ControlButton';
 import { FileTypeFilter } from '@/components/ui/FileTypeFilter';
 import { SortFilter } from '@/components/ui/SortFilter';
@@ -21,6 +22,10 @@ import { useProjectContextFileUpload } from '@/hooks/useProjectContextFileUpload
 import { useStageTemplate } from '@/hooks/useStageTemplate';
 import { useWalkthrough } from '@/hooks/useWalkthrough';
 import { ProjectContextDocument } from '@/models/ProjectContextDocument';
+import {
+  ARTIFACTS_QUERY_KEY,
+  ASSETS_QUERY_KEY,
+} from '@/queries/projectContextQueries';
 import { useCreateOrGetSession } from '@/queries/sessionNavigationQueries';
 import {
   useCanCreateProject,
@@ -58,6 +63,15 @@ const ProjectContextPage = () => {
 
   const stages = useStages();
   const [activeTab, setActiveTab] = useState<TabType>('artifacts');
+  const [isLoadingStages, setIsLoadingStages] = useState(false);
+
+  // Document Viewer State
+  const [showDocumentViewer, setShowDocumentViewer] = useState(false);
+  const [viewingDocument, setViewingDocument] = useState<{
+    id: string;
+    title: string;
+    content: string;
+  } | null>(null);
 
   const { user, preferencesLoaded } = useAuth();
   const { toast } = useToast();
@@ -218,6 +232,11 @@ const ProjectContextPage = () => {
       // Clear the uploaded documents and review files
       clearDocuments();
       setReviewFiles([]);
+
+      // Invalidate queries to ensure fresh data
+      await queryClient.invalidateQueries({ queryKey: [ASSETS_QUERY_KEY] });
+      await queryClient.invalidateQueries({ queryKey: [ARTIFACTS_QUERY_KEY] });
+
       // Trigger refresh of ProjectTabContent to reload files
       setRefreshKey((prev) => prev + 1);
       toast({
@@ -350,7 +369,8 @@ const ProjectContextPage = () => {
 
   // Use React Query for data fetching (auto-syncs with store)
   // useWorkspaceProjectsQuery fetches workspaces AND projects in one call via get-workspace-projects edge function
-  const { isLoading: workspacesAndProjectsLoading } = useWorkspaceProjectsQuery();
+  const { isLoading: workspacesAndProjectsLoading } =
+    useWorkspaceProjectsQuery();
   const workspacesLoading = workspacesAndProjectsLoading;
   const isLoadingProjects = workspacesAndProjectsLoading;
 
@@ -360,6 +380,11 @@ const ProjectContextPage = () => {
   // Data fetching
   const { isLoading: stagesLoading } = useStagesQuery();
   const availableProjects = useAvailableProjects();
+
+  // Update stages loading state
+  useEffect(() => {
+    setIsLoadingStages(stagesLoading);
+  }, [stagesLoading]);
 
   // Mutation for creating new projects
   const createProjectMutation = useCreateProjectMutation();
@@ -372,6 +397,33 @@ const ProjectContextPage = () => {
     isLoadingStageTemplate,
     error: stageTemplateError,
   } = useStageTemplate(activeStage?.project_stage_id);
+
+  // Sticky header observer for hiding description
+  const [isHeaderStuck, setIsHeaderStuck] = useState(false);
+  const titleRowSentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // When sentinel is NOT intersecting (scrolled past), header is sticky
+        // We use a negative bottom margin on sentinel to trigger exactly when sticky kicks in
+        setIsHeaderStuck(
+          !entry.isIntersecting && entry.boundingClientRect.top < 150,
+        );
+      },
+      {
+        root: null, // viewport
+        threshold: [1],
+        rootMargin: '-148px 0px 0px 0px', // Matches sticky top 147px
+      },
+    );
+
+    if (titleRowSentinelRef.current) {
+      observer.observe(titleRowSentinelRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleWorkspaceChange = async (workspaceId: string) => {
     try {
@@ -617,6 +669,19 @@ const ProjectContextPage = () => {
     await processContextFiles(files, updateDocument);
   };
 
+  const handleViewDocument = (item: ProjectItem) => {
+    // Prefer signed_url if available, otherwise use description or empty string
+    // Note: In a real app, you might need to fetch the content if it's not in the item
+    const content = item.signed_url || '';
+
+    setViewingDocument({
+      id: item.id.toString(),
+      title: item.title,
+      content: content,
+    });
+    setShowDocumentViewer(true);
+  };
+
   const handleStartSession = async () => {
     if (!stageTemplate) {
       toast({
@@ -733,10 +798,10 @@ const ProjectContextPage = () => {
       >
         {/* Section 1: Files and Notes List (860px = 60.06% of 1432px total) */}
         <div
-          className="@container bg-white flex flex-col flex-shrink-0 p-loop-6 min-w-0"
+          className="@container bg-white flex flex-col flex-shrink-0 min-w-0 h-full scrollbar-hide overflow-y-auto relative"
           style={{ width: '60%' }}
         >
-          <div className="mb-loop-10">
+          <div className="px-loop-6 pt-loop-6 pb-loop-10 sticky top-0 z-20 bg-white transition-all duration-200">
             <div className="flex items-center gap-loop-2 text-2xl">
               <h1 className="font-bold text-neutral-grayscale-90">
                 {workspacesLoading ? 'Loading...' : currentWorkspace?.name}
@@ -744,67 +809,87 @@ const ProjectContextPage = () => {
               <p className="text-neutral-grayscale-60">LoopOps Hub</p>
             </div>
           </div>
-          {/* Header - Fixed */}
-          <div className="flex flex-col flex-shrink-0 space-y-loop-8">
-            {/* Second Row: Context Header with Workspace/Project Selectors */}
-            <ContextHeader
-              currentWorkspace={currentWorkspace}
-              availableWorkspaces={availableWorkspaces}
-              workspacesLoading={workspacesLoading}
-              onWorkspaceChange={handleWorkspaceChange}
-              selectedProject={selectedProject}
-              availableProjects={availableProjects}
-              isLoadingProjects={isLoadingProjects}
-              isProjectSelectorOpen={isProjectSelectorOpen}
-              onProjectSelectorOpenChange={setIsProjectSelectorOpen}
-              onProjectChange={handleProjectChange}
-              onCreateNewProject={handleCreateNewProject}
-              highlightProjectId={highlightProjectId}
-              canCreateProject={canCreateProject}
-            />
 
-            {/* Third Row: Category Navigation Tabs */}
-            <div ref={tabNavigationRef} data-testid="project-context-tabs">
-              {stagesLoading ? (
-                <TabNavigationSkeleton />
-              ) : (
-                <TabNavigationControl
-                  activeTab={activeTab}
-                  onTabChange={handleTabChange}
-                />
-              )}
+          <div className="px-loop-6">
+            {/* Context Header with Workspace/Project Selectors - Scrolls away */}
+            <div className="flex flex-col flex-shrink-0 space-y-loop-8 mb-loop-8">
+              <ContextHeader
+                currentWorkspace={currentWorkspace}
+                availableWorkspaces={availableWorkspaces}
+                workspacesLoading={workspacesLoading}
+                onWorkspaceChange={handleWorkspaceChange}
+                selectedProject={selectedProject}
+                availableProjects={availableProjects}
+                isLoadingProjects={isLoadingProjects}
+                isProjectSelectorOpen={isProjectSelectorOpen}
+                onProjectSelectorOpenChange={setIsProjectSelectorOpen}
+                onProjectChange={handleProjectChange}
+                onCreateNewProject={handleCreateNewProject}
+                highlightProjectId={highlightProjectId}
+                canCreateProject={canCreateProject}
+              />
             </div>
+          </div>
 
-            {stagesLoading ? (
+          {/* Navigation Tabs - Sticky below title */}
+          <div
+            ref={tabNavigationRef}
+            data-testid="project-context-tabs"
+            className="sticky top-[94px] z-15 bg-white px-loop-6 pb-loop-5"
+          >
+            {isLoadingStages ? (
+              <TabNavigationSkeleton />
+            ) : (
+              <TabNavigationControl
+                activeTab={activeTab}
+                onTabChange={handleTabChange}
+              />
+            )}
+          </div>
+
+          {/* Title/Description and Filter Controls Row */}
+          {/* Sentinel for sticky detection */}
+          <div
+            ref={titleRowSentinelRef}
+            className="h-px bg-transparent w-full"
+          />
+          <div className="sticky top-[147px] z-10 bg-white px-loop-6 pb-loop-4 transition-all duration-200">
+            {isLoadingStages ? (
               <div dangerouslySetInnerHTML={{ __html: '' }} />
             ) : (
               activeStage && (
                 <>
-                  {/* Title/Description and Filter Controls Row */}
-                  <div className="flex flex-col @[715px]:flex-row @[715px]:items-center justify-between gap-loop-10 mb-loop-10">
-                    {/* Left Side: Title and Description */}
+                  <div className="flex flex-col @[715px]:flex-row @[715px]:items-center justify-between gap-loop-10 mb-loop-4">
                     <div className="flex flex-col items-start justify-center">
                       <h2 className="text-2xl font-bold">
                         {activeTab === 'artifacts'
                           ? 'Project Artifacts'
                           : 'Project Assets'}
                       </h2>
-                      <p className="text-neutral-grayscale-60 text-lg">
-                        {activeTab === 'artifacts' ? (
-                          <>
-                            Artifacts are documents generated by you and your
-                            team. They are shared with everyone in this project.
-                          </>
-                        ) : (
-                          <>
-                            These Files are indexed by LoopOps’ AI, and used as
-                            knowledge base for the project.
-                          </>
-                        )}
-                      </p>
+                      <div
+                        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                          isHeaderStuck
+                            ? 'max-h-0 opacity-0'
+                            : 'max-h-[100px] opacity-100'
+                        }`}
+                      >
+                        <p className="text-neutral-grayscale-60 text-lg">
+                          {activeTab === 'artifacts' ? (
+                            <>
+                              Artifacts are documents generated by you and your
+                              team. They are shared with everyone in this
+                              project.
+                            </>
+                          ) : (
+                            <>
+                              These Files are indexed by LoopOps’ AI, and used
+                              as knowledge base for the project.
+                            </>
+                          )}
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Right Side: Filter and Sort Controls */}
                     <div className="flex items-center justify-end space-x-loop-2 flex-shrink-0">
                       {activeTab === 'assets' && (
                         <ControlButton
@@ -831,14 +916,15 @@ const ProjectContextPage = () => {
           </div>
 
           {/* Tab Content Section - Takes remaining height */}
-          <div className="flex-1 min-h-0 !mt-loop-10">
-            {!stagesLoading &&
+          <div className="px-loop-6 min-h-screen">
+            {!isLoadingStages &&
               (activeTab === 'assets' ? (
                 <AssetsTabDisplay
                   key={refreshKey}
                   selectedFileType={selectedFileType}
                   selectedSort={selectedSort}
                   onSelectedFilesChange={handleSelectedFilesChange}
+                  onViewDocument={handleViewDocument}
                 />
               ) : (
                 <ArtifactsTabDisplay
@@ -1013,6 +1099,15 @@ const ProjectContextPage = () => {
       {/* File Upload Loading Overlay */}
       {/* File Upload Loading Overlay */}
       <ProcessingFilesOverlay uploadingDocuments={uploadingDocuments} />
+
+      {/* Document Viewer Overlay */}
+      <DocumentViewer
+        isOpen={showDocumentViewer}
+        onClose={() => setShowDocumentViewer(false)}
+        documentTitle={viewingDocument?.title || ''}
+        documentContent={viewingDocument?.content || ''}
+        // Add additional handlers if needed, e.g., onStartLoop, onDownload
+      />
     </div>
   );
 };

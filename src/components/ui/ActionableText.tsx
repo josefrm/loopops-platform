@@ -30,10 +30,8 @@ export const ActionableText = React.forwardRef<
     return (
       <div
         ref={ref}
-        className={`flex items-center gap-2 h-loop-6 ${
-          onClick && !disabled
-            ? 'cursor-pointer hover:opacity-80 transition-opacity'
-            : ''
+        className={`flex items-center gap-2 px-loop-4 py-loop-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-sm transition-all ${
+          onClick && !disabled ? 'cursor-pointer' : ''
         } ${className}`}
         onClick={onClick && !disabled ? onClick : undefined}
         role={onClick ? 'button' : undefined}
@@ -51,7 +49,7 @@ export const ActionableText = React.forwardRef<
       >
         {Icon && <Icon className={`${iconClassName || 'text-current'}`} />}
         <span
-          className={`text-sm font-semibold underline ${
+          className={`text-sm font-medium ${
             disabled ? 'opacity-50' : ''
           } ${textClassName || 'text-white'}`}
         >

@@ -10,33 +10,7 @@ export const IntegrationIcon: React.FC<IntegrationIconProps> = ({
   className = 'w-10 h-10',
 }) => {
   const iconMap: Record<string, JSX.Element> = {
-    Figma: (
-      <svg
-        className={className}
-        viewBox="0 0 40 40"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect width="40" height="40" rx="8" fill="#000000" />
-        <path
-          d="M16 10H20V16.67H16C14.16 16.67 12.67 15.18 12.67 13.33C12.67 11.49 14.16 10 16 10Z"
-          fill="#FF7262"
-        />
-        <path
-          d="M20 10H24C25.84 10 27.33 11.49 27.33 13.33C27.33 15.18 25.84 16.67 24 16.67H20V10Z"
-          fill="#1ABCFE"
-        />
-        <path
-          d="M20 16.67H24C25.84 16.67 27.33 18.16 27.33 20C27.33 21.84 25.84 23.33 24 23.33H20V16.67Z"
-          fill="#0ACF83"
-        />
-        <path
-          d="M12.67 26.67C12.67 24.83 14.16 23.34 16 23.34H20V26.67C20 28.51 18.51 30 16.67 30C14.83 30 12.67 28.51 12.67 26.67Z"
-          fill="#A259FF"
-        />
-        <circle cx="23.33" cy="20" r="3.33" fill="#000000" />
-      </svg>
-    ),
+    Figma: <img src="/icons/Figma.svg" alt="Figma" className={className} />,
     Jira: (
       <svg
         className={className}
@@ -85,22 +59,7 @@ export const IntegrationIcon: React.FC<IntegrationIconProps> = ({
       </svg>
     ),
     Bucket: (
-      <svg
-        className={className}
-        viewBox="0 0 40 40"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect width="40" height="40" rx="8" fill="#0052CC" />
-        <path
-          d="M11.5 11.5L13 13L20 20L13 27L11.5 28.5L18.5 28.5L20 27L27 20L20 13L18.5 11.5H11.5Z"
-          fill="white"
-        />
-        <path
-          d="M20 20L27 13L28.5 11.5L28.5 18.5L27 20L20 27L20 20Z"
-          fill="#2684FF"
-        />
-      </svg>
+      <img src="/icons/Bitbucket.svg" alt="Bitbucket" className={className} />
     ),
     Cursor: (
       <svg
@@ -195,20 +154,7 @@ export const IntegrationIcon: React.FC<IntegrationIconProps> = ({
         <path d="M15 14L17 12L23 12L25 14V26L23 28H17L15 26V14Z" fill="white" />
       </svg>
     ),
-    Miro: (
-      <svg
-        className={className}
-        viewBox="0 0 40 40"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect width="40" height="40" rx="8" fill="#FFD02F" />
-        <path d="M12 10L15 10L15 30L12 30L12 10Z" fill="#050038" />
-        <path d="M17 12L20 12L20 30L17 30L17 12Z" fill="#050038" />
-        <path d="M22 14L25 14L25 30L22 30L22 14Z" fill="#050038" />
-        <path d="M27 16L30 16L30 30L27 30L27 16Z" fill="#050038" />
-      </svg>
-    ),
+    Miro: <img src="/icons/Miro.svg" alt="Miro" className={className} />,
   };
 
   return iconMap[type] || iconMap.Figma;

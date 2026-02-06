@@ -1,6 +1,6 @@
-import React from 'react';
-import { Loader } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Loader } from 'lucide-react';
+import React from 'react';
 
 interface StageNavigationLoaderProps {
   isNavigating: boolean;
@@ -26,7 +26,7 @@ export const StageNavigationLoader: React.FC<StageNavigationLoaderProps> = ({
         <div className="text-center space-y-loop-4">
           <div className="flex flex-col items-center gap-loop-3">
             <img
-              src="/lovable-uploads/loop_ops_small.png"
+              src="/images/loopops_icons/loopops_black.svg"
               alt="LoopOps"
               className="w-16 h-16 object-contain animate-pulse"
             />

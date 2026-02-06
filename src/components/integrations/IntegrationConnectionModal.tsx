@@ -1,11 +1,14 @@
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { useIntegrationsStore, type Integration } from '@/stores/integrationsStore';
+import { useGenerateCode } from '@/hooks/useIntegrations';
+import {
+  useIntegrationsStore,
+  type Integration,
+} from '@/stores/integrationsStore';
+import { useWorkspaceProjectStore } from '@/stores/workspaceProjectStore';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { ExternalLink, Eye, Info, Sparkles, Copy, Check } from 'lucide-react';
+import { Check, Copy, ExternalLink, Eye, Info, Sparkles } from 'lucide-react';
 import React, { useState } from 'react';
 import { IntegrationIcon } from '../ui/icons/IntegrationIcons';
-import { useGenerateCode } from '@/hooks/useIntegrations';
-import { useWorkspaceProjectStore } from '@/stores/workspaceProjectStore';
 
 interface IntegrationConnectionModalProps {
   open: boolean;
@@ -17,8 +20,8 @@ export const IntegrationConnectionModal: React.FC<
   IntegrationConnectionModalProps
 > = ({ open, onOpenChange, integration }) => {
   const { toggleConnection, updateIntegration } = useIntegrationsStore();
-  const [companyUrl, setCompanyUrl] = useState('https://cinemex.atlassian.net');
-  const [userName, setUserName] = useState('edgar.askur@cinemex.com');
+  const [companyUrl, setCompanyUrl] = useState('');
+  const [userName, setUserName] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -26,9 +29,9 @@ export const IntegrationConnectionModal: React.FC<
     code: string;
     expires_at: string;
   } | null>(null);
-  
+
   const isPromptType = integration.type === 'prompt';
-  
+
   const selectedProject = useWorkspaceProjectStore((state) =>
     state.getCurrentProject(),
   );
@@ -45,7 +48,7 @@ export const IntegrationConnectionModal: React.FC<
 
   const handleGenerateCode = () => {
     const workspaceId = currentWorkspace?.id || selectedProject?.workspace_id;
-    
+
     if (!selectedProject?.id || !workspaceId) {
       return;
     }
@@ -127,7 +130,9 @@ export const IntegrationConnectionModal: React.FC<
               <div className="bg-[#F5E6FF] border border-[#BC43B2] rounded-[16px] p-4 shadow-[0px_8px_20px_0px_rgba(0,0,0,0.05)] flex gap-2.5 items-center">
                 <Info className="w-6 h-6 text-[#BC43B2] shrink-0" />
                 <p className="font-bold text-[13px] leading-normal text-[#BC43B2]">
-                  Click "Generate Code" to create a temporary access code. Use this code in the {integration.name} plugin to connect to Loopops.
+                  Click "Generate Code" to create a temporary access code. Use
+                  this code in the {integration.name} plugin to connect to
+                  Loopops.
                 </p>
               </div>
 
@@ -168,7 +173,8 @@ export const IntegrationConnectionModal: React.FC<
                         Ready to Connect
                       </p>
                       <p className="font-normal text-[13px] leading-normal text-[#666666]">
-                        Generate a secure code to link your {integration.name} workspace
+                        Generate a secure code to link your {integration.name}{' '}
+                        workspace
                       </p>
                     </div>
                     <button
@@ -201,8 +207,8 @@ export const IntegrationConnectionModal: React.FC<
                 <div className="bg-[#D0E6FB] border border-[#2682D9] rounded-[16px] p-4 shadow-[0px_8px_20px_0px_rgba(0,0,0,0.05)] flex gap-2.5 items-center">
                   <Info className="w-6 h-6 text-[#1B5B98] shrink-0" />
                   <p className="font-bold text-[13px] leading-normal text-[#1B5B98]">
-                    To get your API Key, go to: JIRA / Account Settings / Security /
-                    API Tokens
+                    To get your API Key, go to: JIRA / Account Settings /
+                    Security / API Tokens
                   </p>
                 </div>
               </div>
@@ -269,22 +275,22 @@ export const IntegrationConnectionModal: React.FC<
                   href="#"
                   className="flex gap-1 items-center group"
                   onClick={(e) => e.preventDefault()}
-              >
-                <ExternalLink className="w-6 h-6 text-[#666666]" />
-                <p className="font-bold text-[11px] leading-normal tracking-[0.55px] text-[#666666] underline uppercase">
-                  DOCUMENTATION
-                </p>
-              </a>
-              <a
-                href="#"
-                className="flex gap-1 items-center group"
-                onClick={(e) => e.preventDefault()}
-              >
-                <ExternalLink className="w-6 h-6 text-[#666666]" />
-                <p className="font-bold text-[11px] leading-normal tracking-[0.55px] text-[#666666] underline uppercase">
-                  GET THE API KEY
-                </p>
-              </a>
+                >
+                  <ExternalLink className="w-6 h-6 text-[#666666]" />
+                  <p className="font-bold text-[11px] leading-normal tracking-[0.55px] text-[#666666] underline uppercase">
+                    DOCUMENTATION
+                  </p>
+                </a>
+                <a
+                  href="#"
+                  className="flex gap-1 items-center group"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <ExternalLink className="w-6 h-6 text-[#666666]" />
+                  <p className="font-bold text-[11px] leading-normal tracking-[0.55px] text-[#666666] underline uppercase">
+                    GET THE API KEY
+                  </p>
+                </a>
               </div>
             )}
 

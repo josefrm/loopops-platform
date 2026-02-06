@@ -145,7 +145,7 @@ const DialogInner: React.FC<
               {/* <div className="flex items-center space-x-loop-2 h-loop-10">
                 {showLogo && (
                   <img
-                    src="/lovable-uploads/loopops_logo.png"
+                    src="/images/loopops_icons/loopops_black.svg"
                     alt="LoopOps"
                     className="h-7 w-auto"
                   />

@@ -79,7 +79,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-50 flex items-center justify-center">
         <div className="text-center animate-pulse">
           <img
-            src="/lovable-uploads/loopops_logo.png"
+            src="/images/loopops_icons/loopops_black.svg"
             alt="LoopOps"
             className={'h-loop-8 w-auto'}
           />

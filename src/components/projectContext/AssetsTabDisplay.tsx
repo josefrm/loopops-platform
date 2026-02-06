@@ -22,12 +22,14 @@ interface AssetsTabDisplayProps {
     count: number,
     metadata: { id: string; title: string }[],
   ) => void;
+  onViewDocument?: (item: ProjectItem) => void;
 }
 
 export const AssetsTabDisplay: React.FC<AssetsTabDisplayProps> = ({
   selectedFileType = 'all',
   selectedSort = 'newest-to-oldest',
   onSelectedFilesChange,
+  onViewDocument,
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -214,9 +216,9 @@ export const AssetsTabDisplay: React.FC<AssetsTabDisplayProps> = ({
   const showLoading = isLoadingItems;
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 min-h-0 w-full relative">
-        <div className="h-full overflow-y-auto overflow-x-hidden scrollbar-hide pr-loop-2">
+    <div className="flex flex-col">
+      <div className="w-full relative">
+        <div className="pr-loop-2">
           {showLoading ? (
             <div className="flex items-center justify-center h-full p-loop-8 pr-loop-2">
               <AILoadingState message="Loading your assets..." />
@@ -279,7 +281,13 @@ export const AssetsTabDisplay: React.FC<AssetsTabDisplayProps> = ({
                       onSelect={(checked: boolean) =>
                         handleCheckboxChange(item.id, checked)
                       }
-                      onClick={() => console.log('Clicked item:', item.id)}
+                      onClick={() => {
+                        if (onViewDocument) {
+                          onViewDocument(item);
+                        } else {
+                          console.log('Clicked item:', item.id);
+                        }
+                      }}
                       onDownload={() => downloadFile(item.id.toString())}
                       onDelete={() =>
                         deleteFile(item.id.toString(), item.title)

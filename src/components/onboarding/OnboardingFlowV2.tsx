@@ -91,15 +91,15 @@ export const OnboardingFlowV2: React.FC = () => {
   // Handle input changes
   const handleInputChange =
     (field: keyof OnboardingFormDataV2) =>
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setFormData((prev) => ({ ...prev, [field]: value }));
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setFormData((prev) => ({ ...prev, [field]: value }));
 
-        // Clear error when user starts typing
-        if (errors[field]) {
-          setErrors((prev) => ({ ...prev, [field]: undefined }));
-        }
-      };
+      // Clear error when user starts typing
+      if (errors[field]) {
+        setErrors((prev) => ({ ...prev, [field]: undefined }));
+      }
+    };
 
   const handleRoleChange = (role: (typeof roleOptionsV2)[0]) => {
     setSelectedRole(role);
@@ -174,7 +174,7 @@ export const OnboardingFlowV2: React.FC = () => {
           fieldsToValidate.map((field) => [
             field,
             onboardingSchemaV2.shape[
-            field as keyof typeof onboardingSchemaV2.shape
+              field as keyof typeof onboardingSchemaV2.shape
             ],
           ]),
         ),
@@ -372,14 +372,17 @@ export const OnboardingFlowV2: React.FC = () => {
   // Render setup screen
   if (isSettingUpProject) {
     return (
-      <div className="min-h-screen w-full bg-workspace-gradient flex items-center justify-center p-loop-8">
-        <div className="w-[1120px] h-[644px] rounded-md shadow-lg overflow-hidden flex">
+      <div
+        className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-loop-8"
+        style={{ backgroundImage: "url('/images/background/cover02.png')" }}
+      >
+        <div className="w-[1120px] h-[644px] rounded-custom shadow-lg overflow-hidden flex">
           {/* Left Panel - Setup Status */}
           <div className="w-1/2 bg-neutral-grayscale-0 p-loop-14 space-y-loop-10 flex flex-col justify-center">
             <div className="space-y-loop-8 px-loop-14">
               <div className="space-y-loop-4">
                 <img
-                  src="/lovable-uploads/loopops_logo.png"
+                  src="/images/loopops_icons/loopops_black.svg"
                   alt="Loop Ops Logo"
                   className="h-[32px] w-auto"
                 />
@@ -427,7 +430,7 @@ export const OnboardingFlowV2: React.FC = () => {
           </div>
 
           {/* Right Panel - Explanation */}
-          <div className="w-1/2 bg-workspace-gradient flex items-center justify-center px-[116px] py-[202px]">
+          <div className="w-1/2 bg-white/10 backdrop-blur-md flex items-center justify-center px-[116px] py-[202px]">
             <div className="text-left">
               <span className="text-neutral-grayscale-90 text-[32px] font-bold">
                 We're creating your workspace, stages, agents, and storage
@@ -445,7 +448,7 @@ export const OnboardingFlowV2: React.FC = () => {
     <>
       <div className="space-y-loop-4">
         <img
-          src="/lovable-uploads/loopops_logo.png"
+          src="/images/loopops_icons/loopops_black.svg"
           alt="Loop Ops Logo"
           className="h-[32px] w-auto"
         />
@@ -503,7 +506,7 @@ export const OnboardingFlowV2: React.FC = () => {
     <>
       <div className="space-y-loop-4">
         <img
-          src="/lovable-uploads/loopops_logo.png"
+          src="/images/loopops_icons/loopops_black.svg"
           alt="Loop Ops Logo"
           className="h-[32px] w-auto"
         />
@@ -552,7 +555,7 @@ export const OnboardingFlowV2: React.FC = () => {
     <>
       <div className="space-y-loop-4">
         <img
-          src="/lovable-uploads/loopops_logo.png"
+          src="/images/loopops_icons/loopops_black.svg"
           alt="Loop Ops Logo"
           className="h-[32px] w-auto"
         />
@@ -606,7 +609,7 @@ export const OnboardingFlowV2: React.FC = () => {
             <div className="relative mb-loop-6">
               <div
                 onClick={handleProfilePictureClick}
-                className="w-[100px] h-[100px] rounded-full bg-neutral-grayscale-90 cursor-pointer overflow-hidden hover:bg-neutral-grayscale-80 transition-colors flex items-center justify-center"
+                className="w-[100px] h-[100px] rounded-full bg-white/10 backdrop-blur-sm border border-neutral-grayscale-70 cursor-pointer overflow-hidden hover:bg-white/20 transition-colors flex items-center justify-center"
               >
                 {formData.profilePicture ? (
                   <img
@@ -615,14 +618,14 @@ export const OnboardingFlowV2: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <User size={40} className="text-neutral-grayscale-0" />
+                  <User size={40} className="text-neutral-grayscale-90" />
                 )}
               </div>
               <div
                 onClick={handleProfilePictureClick}
-                className="absolute -bottom-1 -right-1 w-loop-8 h-loop-8 bg-neutral-grayscale-0 rounded-full flex items-center justify-center hover:bg-neutral-grayscale-10 transition-colors cursor-pointer"
+                className="absolute -bottom-1 -right-1 w-loop-8 h-loop-8 bg-brand-accent-50 rounded-full flex items-center justify-center hover:bg-brand-accent-50/90 transition-colors cursor-pointer"
               >
-                <Camera size={16} className="text-neutral-grayscale-90" />
+                <Camera size={16} className="text-white" />
               </div>
             </div>
 
@@ -689,8 +692,11 @@ export const OnboardingFlowV2: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-workspace-gradient flex flex-col items-center justify-center p-loop-8 space-y-loop-8">
-      <div className="w-[1120px] h-[644px] rounded-md shadow-lg overflow-hidden flex">
+    <div
+      className="min-h-screen w-full bg-cover bg-center flex flex-col items-center justify-center p-loop-8 space-y-loop-8"
+      style={{ backgroundImage: "url('/images/background/cover02.png')" }}
+    >
+      <div className="w-[1120px] h-[644px] rounded-custom shadow-lg overflow-hidden flex">
         {/* Left Panel - Form */}
         <div className="w-1/2 bg-neutral-grayscale-0 p-loop-14 space-y-loop-10">
           {/* Progress Indicators */}
@@ -709,12 +715,13 @@ export const OnboardingFlowV2: React.FC = () => {
               {[1, 2, 3].map((step, index) => (
                 <React.Fragment key={step}>
                   <div
-                    className={`w-loop-8 h-loop-8 rounded-full flex items-center justify-center text-sm font-bold ${step < currentStep
+                    className={`w-loop-8 h-loop-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                      step < currentStep
                         ? 'bg-system-success-50 text-neutral-grayscale-0'
                         : step === currentStep
                           ? 'bg-brand-accent-50 text-neutral-grayscale-0'
                           : 'bg-neutral-grayscale-20 text-neutral-grayscale-60'
-                      }`}
+                    }`}
                   >
                     {step < currentStep ? '✓' : step}
                   </div>
@@ -742,7 +749,7 @@ export const OnboardingFlowV2: React.FC = () => {
         </div>
 
         {/* Right Panel - Dynamic Content */}
-        <div className="w-1/2 bg-workspace-gradient flex items-center justify-center px-[116px] py-[202px]">
+        <div className="w-1/2 bg-white/10 backdrop-blur-md flex items-center justify-center px-[116px] py-[202px]">
           {renderRightContent()}
         </div>
 

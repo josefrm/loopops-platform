@@ -1,7 +1,7 @@
-import { Checkbox } from '@/components/ui/checkbox';
 import { ControlButton } from '@/components/ui/ControlButton';
-import { Input } from '@/components/ui/input';
 import { SocialSignInButton } from '@/components/ui/SocialSignInButton';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Eye, EyeClosed, LogIn } from 'lucide-react';
@@ -68,35 +68,35 @@ export const SignUp: React.FC = () => {
 
   const handleInputChange =
     (field: keyof SignUpFormData) =>
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value =
-          e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-        const newFormData = { ...formData, [field]: value };
-        setFormData(newFormData);
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value =
+        e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+      const newFormData = { ...formData, [field]: value };
+      setFormData(newFormData);
 
-        // Validate the specific field and clear error if it becomes valid
-        try {
-          if (field === 'email') {
-            z.string().email().parse(value);
-            setErrors((prev) => ({ ...prev, email: undefined }));
-          } else if (field === 'password') {
-            z.string().min(8).parse(value);
-            setErrors((prev) => ({ ...prev, password: undefined }));
-            // Also check confirm password when password changes
-            if (newFormData.confirmPassword) {
-              debouncedPasswordMatch(
-                value as string,
-                newFormData.confirmPassword,
-              );
-            }
-          } else if (field === 'confirmPassword') {
-            // Use debounced validation for password matching
-            debouncedPasswordMatch(newFormData.password, value as string);
+      // Validate the specific field and clear error if it becomes valid
+      try {
+        if (field === 'email') {
+          z.string().email().parse(value);
+          setErrors((prev) => ({ ...prev, email: undefined }));
+        } else if (field === 'password') {
+          z.string().min(8).parse(value);
+          setErrors((prev) => ({ ...prev, password: undefined }));
+          // Also check confirm password when password changes
+          if (newFormData.confirmPassword) {
+            debouncedPasswordMatch(
+              value as string,
+              newFormData.confirmPassword,
+            );
           }
-        } catch {
-          // Field is still invalid, keep the error
+        } else if (field === 'confirmPassword') {
+          // Use debounced validation for password matching
+          debouncedPasswordMatch(newFormData.password, value as string);
         }
-      };
+      } catch {
+        // Field is still invalid, keep the error
+      }
+    };
 
   const validateForm = () => {
     try {
@@ -163,25 +163,26 @@ export const SignUp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-workspace-gradient flex items-center justify-center p-loop-8">
-      <div className="flex flex-col items-center justify-center text-center space-y-loop-8">
-        {/* Logo */}
-        <div className="flex items-center justify-center">
-          <img
-            src="/lovable-uploads/landing_loopops_logo.png"
-            alt="Loop Ops Logo"
-            className="max-w-[170px] h-auto"
-          />
-        </div>
-
+    <div
+      className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-loop-8"
+      style={{ backgroundImage: "url('/images/background/cover03.jpg')" }}
+    >
+      <div className="flex flex-col items-center justify-center text-center space-y-loop-8 w-full max-w-[800px]">
         {/* Welcome Message */}
-        <div className="space-y-loop-10 rounded-md bg-neutral-grayscale-0 p-loop-12 shadow-lg w-[700px]">
-          <div className="flex">
-            <h1 className="text-lg font-bold">Sign up to LoopOps</h1>
+        <div className="space-y-loop-10 rounded-custom bg-white/70 backdrop-blur-md p-loop-12 shadow-2xl w-full">
+          <div className="flex space-x-loop-4">
+            <img
+              src="/images/loopops_icons/loopops_black.svg"
+              alt="Loop Ops Logo"
+              className="max-w-[50px] h-auto drop-shadow-sm"
+            />
+            <h1 className="text-2xl font-bold text-neutral-grayscale-90">
+              Sign up to LoopOps
+            </h1>
           </div>
 
           {/* Two columns layout with margin top */}
-          <div className="mt-loop-8 flex">
+          <div className="mt-loop-8 flex gap-loop-8">
             {/* First column - 50% width */}
             <div className="w-1/2">
               <form onSubmit={handleSubmit} className="space-y-loop-6">
@@ -194,7 +195,9 @@ export const SignUp: React.FC = () => {
                       value={formData.email}
                       onChange={handleInputChange('email')}
                       className={
-                        errors.email ? 'border-system-error-50' : 'h-loop-10'
+                        errors.email
+                          ? 'border-system-error-50 placeholder:text-neutral-grayscale-90'
+                          : 'h-loop-10 placeholder:text-neutral-grayscale-90'
                       }
                       placeholder="Email"
                     />
@@ -204,7 +207,6 @@ export const SignUp: React.FC = () => {
                       </p>
                     )}
                   </div>
-
                   {/* Password */}
                   <div>
                     <div className="relative">
@@ -215,8 +217,8 @@ export const SignUp: React.FC = () => {
                         onChange={handleInputChange('password')}
                         className={
                           errors.password
-                            ? 'border-system-error-50 pr-loop-10'
-                            : 'h-loop-10 pr-loop-10'
+                            ? 'border-system-error-50 pr-loop-10 placeholder:text-neutral-grayscale-90'
+                            : 'h-loop-10 pr-loop-10 placeholder:text-neutral-grayscale-90'
                         }
                         placeholder="Password"
                       />
@@ -224,7 +226,7 @@ export const SignUp: React.FC = () => {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         tabIndex={-1}
-                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-40 hover:text-neutral-grayscale-60 transition-colors"
+                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-90 hover:text-neutral-grayscale-90 transition-colors"
                       >
                         {showPassword ? (
                           <Eye size={16} />
@@ -239,7 +241,6 @@ export const SignUp: React.FC = () => {
                       </p>
                     )}
                   </div>
-
                   {/* Confirm Password */}
                   <div>
                     <div className="relative">
@@ -250,8 +251,8 @@ export const SignUp: React.FC = () => {
                         onChange={handleInputChange('confirmPassword')}
                         className={
                           errors.confirmPassword
-                            ? 'border-system-error-50 pr-loop-10'
-                            : 'h-loop-10 pr-loop-10'
+                            ? 'border-system-error-50 pr-loop-10 placeholder:text-neutral-grayscale-90'
+                            : 'h-loop-10 pr-loop-10 placeholder:text-neutral-grayscale-90'
                         }
                         placeholder="Confirm Password"
                       />
@@ -261,7 +262,7 @@ export const SignUp: React.FC = () => {
                           setShowConfirmPassword(!showConfirmPassword)
                         }
                         tabIndex={-1}
-                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-40 hover:text-neutral-grayscale-60 transition-colors"
+                        className="absolute right-loop-3 top-1/2 -translate-y-1/2 text-neutral-grayscale-90 hover:text-neutral-grayscale-90 transition-colors"
                       >
                         {showConfirmPassword ? (
                           <Eye size={16} />
@@ -290,7 +291,7 @@ export const SignUp: React.FC = () => {
                           keepSignedIn: checked as boolean,
                         }))
                       }
-                      className="h-loop-6 w-loop-6 rounded-full data-[state=checked]:bg-system-success-50 data-[state=checked]:border-system-success-50"
+                      className="h-loop-6 w-loop-6 rounded-full border-neutral-grayscale-80 data-[state=checked]:bg-brand-accent-50 data-[state=checked]:border-brand-accent-50 text-white"
                     />
                     <label
                       htmlFor="keepSignedIn"
@@ -319,11 +320,11 @@ export const SignUp: React.FC = () => {
                             }));
                           }
                         }}
-                        className="h-loop-6 w-loop-6 rounded-full data-[state=checked]:bg-system-success-50 data-[state=checked]:border-system-success-50"
+                        className="h-loop-6 w-loop-6 rounded-full border-neutral-grayscale-80 data-[state=checked]:bg-brand-accent-50 data-[state=checked]:border-brand-accent-50 text-white"
                       />
                       <label
                         htmlFor="agreeTerms"
-                        className="text-sm text-neutral-grayscale-90"
+                        className="text-sm text-neutral-grayscale-90 cursor-pointer"
                       >
                         I agree to the terms and conditions
                       </label>
@@ -350,18 +351,18 @@ export const SignUp: React.FC = () => {
                   text="Already have an account? Sign in"
                   onClick={handleSignInClick}
                   icon={LogIn}
-                  textClassName="text-brand-accent-50 text-sm"
+                  textClassName="text-brand-accent-50 hover:text-brand-accent-50 transition-colors text-sm"
                   iconClassName="text-brand-accent-50"
                 />
               </form>
             </div>
 
             {/* Vertical separator line */}
-            <div className="w-px bg-neutral-grayscale-30 mx-loop-12"></div>
+            <div className="w-px bg-neutral-grayscale-80 mx-loop-12"></div>
 
             {/* Second column - 50% width (empty for now) */}
             <div className="w-1/2 space-y-loop-6">
-              <h1 className="text-lg font-bold">Or</h1>
+              <h1 className="text-lg font-boldr">Or</h1>
               <div className="space-y-loop-4">
                 <SocialSignInButton
                   provider="google"

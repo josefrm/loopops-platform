@@ -239,6 +239,7 @@ const ArtifactStageSection: React.FC<ArtifactStageSectionProps> = ({
               onToggleItem(item.id.toString(), item.title, checked)
             }
             onClick={() => {
+              // Always toggle selection, removed preview action
               const id = item.id.toString();
               const isSelected = selectedItemIds.has(id);
               onToggleItem(id, item.title, !isSelected);
@@ -306,7 +307,7 @@ export const ArtifactsTabDisplay: React.FC<ArtifactsTabDisplayProps> = ({
   }
 
   return (
-    <div className="h-full overflow-y-auto overflow-x-hidden scrollbar-hide pr-loop-2 pb-loop-8">
+    <div className="pr-loop-2 pb-loop-8">
       {stages.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full p-loop-8">
           <p className="text-neutral-grayscale-60">No stages found.</p>

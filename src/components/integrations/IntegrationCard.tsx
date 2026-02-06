@@ -1,6 +1,4 @@
-import { useGenerateCode } from '@/hooks/useIntegrations';
-import { useWorkspaceProjectStore } from '@/stores/workspaceProjectStore';
-import { Check, Copy, ExternalLink, Sparkles } from 'lucide-react';
+import { Check, Copy, ExternalLink } from 'lucide-react';
 import React, { useState } from 'react';
 import { ActionableText } from '../ui/ActionableText';
 import { IntegrationIcon } from '../ui/icons/IntegrationIcons';
@@ -27,24 +25,10 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [generatedCode, setGeneratedCode] = useState<{
+  const [generatedCode] = useState<{
     code: string;
     expires_at: string;
   } | null>(null);
-
-  const selectedProject = useWorkspaceProjectStore((state) =>
-    state.getCurrentProject(),
-  );
-  const currentWorkspace = useWorkspaceProjectStore((state) =>
-    state.getCurrentWorkspace(),
-  );
-
-  const generateCodeMutation = useGenerateCode({
-    integrationType: id,
-    onSuccess: (data) => {
-      setGeneratedCode(data);
-    },
-  });
 
   const handleConnect = () => {
     setShowModal(true);
@@ -71,24 +55,12 @@ export const IntegrationCard: React.FC<IntegrationCardProps> = ({
     return date.toLocaleString();
   };
 
-  const handleGenerateCode = () => {
-    if (!selectedProject?.id || !currentWorkspace?.id) {
-      console.error('Project or workspace not selected');
-      return;
-    }
-
-    generateCodeMutation.mutate({
-      project_id: selectedProject.id,
-      workspace_id: currentWorkspace.id,
-    });
-  };
-
   const integration = { id, name, description, icon, connected, type, prompt };
   return (
     <div className="bg-white border border-neutral-grayscale-30 rounded-[12px] sm:rounded-[14px] lg:rounded-[16px] p-4 sm:p-5 lg:p-6 shadow-[0px_8px_20px_0px_rgba(0,0,0,0.05)] flex flex-col h-full hover:shadow-[0px_12px_24px_0px_rgba(0,0,0,0.08)] transition-all duration-300">
       <div className="flex flex-col gap-3 sm:gap-3.5 lg:gap-4 h-full">
         <div className="flex gap-2 w-full flex-wrap sm:flex-nowrap">
-          <div className="flex items-center pt-1 shrink-0">
+          <div className="flex items-start pt-1 shrink-0">
             <IntegrationIcon
               type={icon}
               className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10"
