@@ -174,7 +174,7 @@ verify_jwt = false
 
 [auth]
 enabled = true
-site_url = "http://localhost:5173"
+site_url = "http://localhost:8080"
 additional_redirect_urls = ["http://localhost:8080", "http://127.0.0.1:5173"]
 enable_signup = true
 
@@ -294,3 +294,25 @@ entrypoint = "./functions/get-agno-sessions-by-id/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/get-agno-sessions-by-id/*.html" ]
+
+[functions.get-activity-user]
+enabled = true
+verify_jwt = false
+import_map = "./functions/get-activity-user/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/get-activity-user/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/get-activity-user/*.html" ]
+
+[functions.impersonation-user]
+enabled = true
+verify_jwt = false
+import_map = "./functions/impersonation-user/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/impersonation-user/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/impersonation-user/*.html" ]
