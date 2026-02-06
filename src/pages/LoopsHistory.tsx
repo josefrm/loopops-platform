@@ -1,11 +1,20 @@
+import { ContextHeader } from '@/components/projectContext/ContextHeader';
 import { ProjectContext2Section } from '@/components/projectContext/ProjectContext2Section';
 import { LoopOpsSidebarLeft } from '@/components/ui/loopops-branding/LoopOpsSidebarLeft';
 import { ProjectNewModal } from '@/components/workspace/ProjectNewModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSidebarWidth } from '@/contexts/SidebarWidthContext';
+import { useRunEventsStore } from '@/features/chat/stores/runEventsStore';
+import { useSessionStore } from '@/features/chat/stores/sessionStore';
+import { useUIStore } from '@/features/chat/stores/uiStore';
 import { useToast } from '@/hooks/use-toast';
+import {
+  useAvailableProjects,
+  useProjectLoading,
+} from '@/hooks/useCurrentProject';
 import { useFileFilters } from '@/hooks/useFileFilters';
 import { useStageTemplate } from '@/hooks/useStageTemplate';
+import { queryClient } from '@/lib/queryClient';
 import { useCreateOrGetSession } from '@/queries/sessionNavigationQueries';
 import {
   useCreateProjectMutation,
@@ -54,6 +63,13 @@ const LoopsHistory = () => {
   // State for Project Creation modal
   const [isProjectCreationModalOpen, setIsProjectCreationModalOpen] =
     useState(false);
+
+  // State for ProjectSelector
+  const [isProjectSelectorOpen, setIsProjectSelectorOpen] = useState(false);
+  const [highlightProjectId, setHighlightProjectId] = useState<string | null>(
+    null,
+  );
+
   // Use unified workspace project store
   const currentWorkspace = useWorkspaceProjectStore((state) =>
     state.getCurrentWorkspace(),
@@ -61,12 +77,26 @@ const LoopsHistory = () => {
   const selectedProject = useWorkspaceProjectStore((state) =>
     state.getCurrentProject(),
   );
+  const availableWorkspaces = useWorkspaceProjectStore(
+    (state) => state.workspaces,
+  );
+  const setCurrentWorkspaceId = useWorkspaceProjectStore(
+    (state) => state.setCurrentWorkspaceId,
+  );
+  const setCurrentProjectId = useWorkspaceProjectStore(
+    (state) => state.setCurrentProjectId,
+  );
+
+  // Use React Query for data fetching (auto-syncs with store)
+  const { isLoading: workspacesLoading } = useWorkspaceProjectsQuery();
+
   // Get the first stage for LoopsTabContent (it needs a stage)
   const activeStage = stages.length > 0 ? stages[0] : null;
 
   // Data fetching
   useStagesQuery();
-  const { isLoading: workspacesLoading } = useWorkspaceProjectsQuery();
+  const availableProjects = useAvailableProjects();
+  const isLoadingProjects = useProjectLoading();
 
   // Mutation for creating new projects
   const createProjectMutation = useCreateProjectMutation();
@@ -76,6 +106,60 @@ const LoopsHistory = () => {
     isLoadingStageTemplate,
     error: stageTemplateError,
   } = useStageTemplate(activeStage?.project_stage_id);
+
+  const handleWorkspaceChange = async (workspaceId: string) => {
+    try {
+      // Use the unified store to switch workspace
+      setCurrentWorkspaceId(workspaceId);
+    } catch (error) {
+      console.error('Error switching workspace:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to switch workspace.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  // Handle project changes
+  const handleProjectChange = async (projectId: string) => {
+    try {
+      useRunEventsStore.getState().clearAllEvents();
+      useUIStore.getState().clearAllSessions();
+      useSessionStore.getState().clearStore();
+
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return (
+            typeof key === 'string' &&
+            (key.includes('session') || key === 'sessions-all')
+          );
+        },
+      });
+
+      // Use the unified store to switch project
+      setCurrentProjectId(projectId);
+
+      // Invalidate and refetch stages for the new project
+      queryClient.invalidateQueries({
+        queryKey: ['stages', 'list', projectId],
+      });
+
+      // Reset current stage since we're switching projects
+      const setCurrentStageId =
+        useWorkspaceProjectStore.getState().setCurrentStageId;
+      setCurrentStageId(null);
+    } catch (error) {
+      console.error('Error switching project:', error);
+      // Silently fail - error is already handled in store
+    }
+  };
+
+  // Handle create new project button click
+  const handleCreateNewProject = () => {
+    setIsProjectCreationModalOpen(true);
+  };
 
   // Handle project creation
   const handleProjectCreation = async (projectData: {
@@ -91,6 +175,19 @@ const LoopsHistory = () => {
 
       // Close modal
       setIsProjectCreationModalOpen(false);
+
+      // Highlight the new project in the selector
+      const projects = useWorkspaceProjectStore.getState().projects;
+      const newProject = projects.find((p) => p.name === projectData.name);
+      if (newProject) {
+        setHighlightProjectId(newProject.id);
+        setIsProjectSelectorOpen(true);
+
+        // Clear highlight after animation completes
+        setTimeout(() => {
+          setHighlightProjectId(null);
+        }, 1500);
+      }
 
       return true;
     } catch (error) {
@@ -208,10 +305,29 @@ const LoopsHistory = () => {
             </div>
           </div>
 
+          {/* Header - Fixed */}
+          <div className="flex flex-col flex-shrink-0 space-y-loop-8">
+            {/* Context Header with Workspace/Project Selectors */}
+            <ContextHeader
+              currentWorkspace={currentWorkspace}
+              availableWorkspaces={availableWorkspaces}
+              workspacesLoading={workspacesLoading}
+              onWorkspaceChange={handleWorkspaceChange}
+              selectedProject={selectedProject}
+              availableProjects={availableProjects}
+              isLoadingProjects={isLoadingProjects}
+              isProjectSelectorOpen={isProjectSelectorOpen}
+              onProjectSelectorOpenChange={setIsProjectSelectorOpen}
+              onProjectChange={handleProjectChange}
+              onCreateNewProject={handleCreateNewProject}
+              highlightProjectId={highlightProjectId}
+            />
+          </div>
+
           {/* Loops Content Section - Takes remaining height */}
           <div className="flex items-center justify-between gap-loop-2">
             <div className="flex flex-col items-start justify-center gap-loop-2">
-              {/* <h2 className="text-2xl font-bold">Loop History</h2> */}
+              <h2 className="text-2xl font-bold">Loop History</h2>
               <p className="text-neutral-grayscale-60 text-lg">
                 Your conversations with LoopOps' AI agents.
               </p>
@@ -221,7 +337,7 @@ const LoopsHistory = () => {
                 type="black_n_white"
                 size="lg"
                 onClick={() => setViewMode('internal')}
-                text="Internal Loops"
+                text="Loops' Internal"
                 active={viewMode === 'internal'}
                 className="h-loop-8"
               />
@@ -229,7 +345,7 @@ const LoopsHistory = () => {
                 type="black_n_white"
                 size="lg"
                 onClick={() => setViewMode('external')}
-                text="External Loops"
+                text="Loops' External"
                 active={viewMode === 'external'}
                 className="h-loop-8"
               />

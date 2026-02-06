@@ -609,7 +609,7 @@ export const OnboardingFlowV2: React.FC = () => {
             <div className="relative mb-loop-6">
               <div
                 onClick={handleProfilePictureClick}
-                className="w-[100px] h-[100px] rounded-full bg-white/10 backdrop-blur-sm border border-white/20 cursor-pointer overflow-hidden hover:bg-white/20 transition-colors flex items-center justify-center"
+                className="w-[100px] h-[100px] rounded-full bg-white/10 backdrop-blur-sm border border-neutral-grayscale-70 cursor-pointer overflow-hidden hover:bg-white/20 transition-colors flex items-center justify-center"
               >
                 {formData.profilePicture ? (
                   <img
@@ -618,7 +618,7 @@ export const OnboardingFlowV2: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <User size={40} className="text-white" />
+                  <User size={40} className="text-neutral-grayscale-90" />
                 )}
               </div>
               <div

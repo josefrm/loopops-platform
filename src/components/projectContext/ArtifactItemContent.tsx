@@ -1,6 +1,7 @@
+import { DeleteArtifactModal } from './DeleteArtifactModal';
 import { formatRelativeTime } from '@/helpers/dateHelpers';
 import { Bookmark, Download, Trash } from 'lucide-react';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { formatFileSize } from '../../utils/fileUtils';
 import { Checkbox } from '../ui/checkbox';
 import { LoopOpsIcon } from '../ui/icons/LoopOpsIcon';
@@ -109,6 +110,8 @@ export const ArtifactItemContent: React.FC<ArtifactItemContentProps> = ({
   const tileStyles = isActive ? activeTileStyles : defaultTileStyles;
   const dividerColor = 'bg-neutral-grayscale-30';
 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   // Action item interface
   interface ActionItem {
     id: string;
@@ -117,6 +120,18 @@ export const ArtifactItemContent: React.FC<ArtifactItemContentProps> = ({
     onClick: () => void;
     className?: string;
   }
+
+  const handleDeleteConfirm = () => {
+    if (onConvert) {
+      // Revert convert to deliverable by setting isDeliverable to false
+      onConvert(
+        typeof itemId === 'string' ? itemId : itemId.toString(),
+        title,
+        false,
+      );
+    }
+    setIsDeleteModalOpen(false);
+  };
 
   // Generate actions for Deliverable items
   const actions = useMemo<ActionItem[]>(() => {
@@ -154,16 +169,11 @@ export const ArtifactItemContent: React.FC<ArtifactItemContentProps> = ({
         ),
         label: 'Remove from loop',
         onClick: () => {
-          if (onConvert) {
-            // Revert convert to deliverable by setting isDeliverable to false
-            onConvert(getItemId(), title, false);
-          } else {
-            console.log('Remove from loop:', title);
-          }
+          setIsDeleteModalOpen(true);
         },
       },
     ];
-  }, [itemId, title, onDownload, onConvert]);
+  }, [itemId, title, onDownload]);
 
   const containerClasses = `
     flex p-loop-4 flex-col items-start gap-loop-2 self-stretch
@@ -272,6 +282,13 @@ export const ArtifactItemContent: React.FC<ArtifactItemContentProps> = ({
           </div>
         )}
       </div>
+      <DeleteArtifactModal
+        open={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+        fileName={title}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={false}
+      />
     </div>
   );
 };
